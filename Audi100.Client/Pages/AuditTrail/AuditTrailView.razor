@@ -1,0 +1,165 @@
+﻿@page "/AuditTrailView"
+@inject NavigationManager NavigationManager
+@inject IService<AuditTrail, int> AuditTrailService
+
+@using Audi100.Services
+@using Audi100.Models
+@using DevExpress.Blazor
+@using DevExpress.Export
+
+<h3>Control de seguimiento de hallazgos</h3>
+
+<div class="card">
+    <div class="card-body">
+        @if (AuditTrails != null && AuditTrails.Any())
+        {
+            <DxGrid @ref="Grid" Data="@AuditTrails" ColumnResizeMode="GridColumnResizeMode.NextColumn"
+                    TextWrapEnabled="false" ShowSearchBox="true" >
+                <Columns>
+                    <DxGridDataColumn Caption="Id del seguimiento" FieldName="@nameof(AuditTrail.AuditTrailId)" Width="95px" Visible="false" />
+                    <DxGridDataColumn Caption="Id del hallazgo" FieldName="@nameof(AuditTrail.AuditFindingId)" Width="95px" Visible="false" />
+                    <DxGridDataColumn Caption="Id del informe" FieldName="@nameof(AuditTrail.AuditReportId)" Width="95px" Visible="false" />
+                    <DxGridDataColumn Caption="Código del informe" FieldName="@nameof(AuditTrail.ReportCode)" />
+                    <DxGridDataColumn Caption="Línea" FieldName="@nameof(AuditTrail.Line)" Width="95px" />
+                    <DxGridDataColumn Caption="Fecha de revisión" FieldName="@nameof(AuditTrail.DateCreate)" Width="95px" />
+                    <DxGridDataColumn Caption="Descripción del informe" FieldName="@nameof(AuditTrail.DisplayName)" Width="95px" Visible="false" />
+                    <DxGridDataColumn Caption="Unidad revisada" FieldName="@nameof(AuditTrail.nomDepto)" />
+                    <DxGridDataColumn Caption="División" FieldName="@nameof(AuditTrail.nomDivision)" Visible="false" />
+                    <DxGridDataColumn Caption="Sección" FieldName="@nameof(AuditTrail.nomSeccion)" Visible="false" />
+                    <DxGridDataColumn Caption="Número de hallago" FieldName="@nameof(AuditTrail.NumberOfFindings)" Visible="false" />
+                    <DxGridDataColumn Caption="Detalle del hallazgo" FieldName="@nameof(AuditTrail.DetailFindingAudit)" />
+                    <DxGridDataColumn Caption="Nivel de hallazgo" FieldName="@nameof(AuditTrail.FindLevel)" Visible="false" />
+                    <DxGridDataColumn Caption="Clasificación de ponderación" FieldName="@nameof(AuditTrail.WeightingClassification)" Visible="false" />
+                    <DxGridDataColumn Caption="Hallazgo con nombre corto" FieldName="@nameof(AuditTrail.FindShortName)" Visible="false" />
+                    <DxGridDataColumn Caption="Sobrante (+)" FieldName="@nameof(AuditTrail.PositiveWeighting)" Visible="false" />
+                    <DxGridDataColumn Caption="Faltante (-)" FieldName="@nameof(AuditTrail.NegativeWeighting)" Visible="false"  />
+                    <DxGridDataColumn Caption="Riesgo (+)" FieldName="@nameof(AuditTrail.PositiveRisk)" Visible="false" />
+                    <DxGridDataColumn Caption="Riesgo (-)" FieldName="@nameof(AuditTrail.NegativeRisk)" Visible="false" />
+                    <DxGridDataColumn Caption="Seguiminento en división" FieldName="@nameof(AuditTrail.AuditTrailDepto)" Visible="false" />
+                    <DxGridDataColumn Caption="Seguimiento en sección" FieldName="@nameof(AuditTrail.AuditTrailSeccion)" Visible="false" />
+                    <DxGridDataColumn Caption="Clasificación de hallazgo" FieldName="@nameof(AuditTrail.AuditTrailWeighting)" Visible="false" />
+                    <DxGridDataColumn Caption="Seguimiento del hallazgo" FieldName="@nameof(AuditTrail.AuditTrailFollow)" />
+                    <DxGridDataColumn Caption="Estado Seguimiento" FieldName="@nameof(AuditTrail.AuditTrailStatus)" />
+                    <DxGridSelectionColumn Width="60px" />
+                    <DxGridCommandColumn Width="250px">
+                        <HeaderTemplate>
+                            <span>Acciones</span>
+                        </HeaderTemplate>
+                        <CellDisplayTemplate Context="commandContext">
+                            @if (commandContext.DataItem is AuditTrail AuditTrail)
+                            {
+                                <div class="d-flex justify-content-start">
+                                    <DxButton Click="@(() => EditReport(AuditTrail.AuditTrailId))" CssClass="btn btn-warning ml-2">
+                                        Editar
+                                    </DxButton>
+                                    <DxButton Click="@(() => ConfirmDelete(AuditTrail.AuditTrailId))" CssClass="btn btn-danger ml-2">
+                                        Eliminar
+                                    </DxButton>
+                                </div>
+                                @if (AuditTrailIdToDelete == AuditTrail.AuditTrailId && showConfirmDelete)
+                                {
+                                    <div class="mt-2 alert alert-warning">
+                                        ¿Seguro que quieres eliminar este seguimiento?
+                                        <DxButton Click="@(() => DeleteReport(AuditTrail.AuditTrailId))" CssClass="btn btn-danger ml-2">
+                                            Sí
+                                        </DxButton>
+                                        <DxButton Click="@CancelDelete" CssClass="btn btn-secondary ml-2">
+                                            No
+                                        </DxButton>
+                                    </div>
+                                }
+                            }
+                        </CellDisplayTemplate>
+                    </DxGridCommandColumn>
+                </Columns>
+                <ToolbarTemplate>
+                    <DxToolbar>
+                        <DxToolbarItem Text="Ajuste de columnas" Click="Grid_FitWidths" RenderStyle="ButtonRenderStyle.Secondary" />
+                        <DxToolbarItem Alignment="ToolbarItemAlignment.Right" Text="Selector de Columnas" RenderStyle="ButtonRenderStyle.Secondary" IconCssClass="grid-icon-column-chooser" Click="ColumnChooserButton_Click" CssClass="mx-1" />
+                        <DxToolbarItem Alignment="ToolbarItemAlignment.Right" Text="Descarga a Excel" Click="ExportXlsx_Click" BeginGroup="true" />
+                    </DxToolbar>
+                </ToolbarTemplate>
+            </DxGrid>
+        }
+        else
+        {
+            <p>Cargando o no se encontraron seguimientos...</p>
+        }
+    </div>
+</div>
+
+<DxButton Click="CreateReport" CssClass="btn btn-success mb-3">
+    Crear Nuevo Seguimiento
+</DxButton>
+
+@code {
+    private List<AuditTrail> AuditTrails = new List<AuditTrail>();
+    private List<AuditReport> auditReports = new List<AuditReport>();
+    private bool showConfirmDelete = false;
+    private int AuditTrailIdToDelete = 0;
+    IGrid Grid { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReports();
+    }
+
+    private async Task LoadReports()
+    {
+        AuditTrails = (await AuditTrailService.GetListAsync()).ToList();
+    }
+
+    private void CreateReport()
+    {
+        NavigationManager.NavigateTo("/AuditTrailForm");
+    }
+
+    private void EditReport(int AuditTrailId)
+    {
+        NavigationManager.NavigateTo($"/AuditTrailForm/{AuditTrailId}");
+    }
+
+    private void ConfirmDelete(int AuditTrailId)
+    {
+        AuditTrailIdToDelete = AuditTrailId;
+        showConfirmDelete = true;
+    }
+
+    private void CancelDelete()
+    {
+        showConfirmDelete = false;
+        AuditTrailIdToDelete = 0;
+    }
+
+    private async Task DeleteReport(int AuditTrailId)
+    {
+        await AuditTrailService.DeleteAsync(AuditTrailId);
+        showConfirmDelete = false;
+        AuditTrailIdToDelete = 0;
+        await LoadReports();
+        StateHasChanged();
+    }
+
+    #region Functions
+    async Task ExportXlsx_Click()
+    {
+        string fileName = $"Datos del Seguimiento del hallazgo ({DateTime.Now})";
+        bool exportSelected = Grid.SelectedDataItems.Count > 0;
+
+        await Grid.ExportToXlsxAsync(fileName, new GridXlExportOptions()
+            {
+                ExportSelectedRowsOnly = exportSelected
+            });
+    }
+
+    void ColumnChooserButton_Click()
+    {
+        Grid.ShowColumnChooser();
+    }
+    void Grid_FitWidths()
+    {
+        Grid.AutoFitColumnWidths();
+    }
+    #endregion
+
+}

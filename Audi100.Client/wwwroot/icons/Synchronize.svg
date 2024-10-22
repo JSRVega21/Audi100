@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="100px" height="100px" baseProfile="basic">
+  <path fill="#61ff7b" d="M32,9.41l-7-4.04L22,7.1l-2-3.46l-4,2.31v4.62l-7,4.04V25l9,15.59l7,4.04l3-1.73l2,3.46l4-2.31v-4.62 l7-4.04V25L32,9.41z M34,34.81l-2,1.16l-4-2.31l-4,2.31l-8-13.86v-6.92l2-1.16l4,2.31l4-2.31l8,13.86V34.81z" />
+  <rect width="4.619" height="4" x="16.691" y="4.525" fill="#4ecc62" transform="rotate(-30 19 6.526)" />
+  <polygon fill="#4ecc62" points="20,12.876 22,11.721 26,14.03 22,16.34" />
+  <polygon fill="#4ecc62" points="13,12.298 16,10.566 16,12.876 18,14.03 15,15.762" />
+  <polygon fill="#57e66f" points="21,7.679 25,5.37 32,9.412 28,11.721" />
+  <polygon fill="#57e66f" points="20,38.279 24,35.97 26,39.434 24,40.588" />
+  <polygon fill="#57e66f" points="24,35.97 28,33.66 32,35.97 31,36.547 32,38.279 30,39.434" />
+  <polygon fill="#44b356" points="30,46.362 34,44.053 34,39.434 33,40.011 32,38.279 30,39.434" />
+  <rect width="4.619" height="18" x="32.191" y="9.36" fill="#4ecc62" transform="rotate(-30 34.499 18.362)" />
+  <rect width="4.619" height="16" x="15.691" y="22.196" fill="#4ecc62" transform="rotate(-30 17.998 30.197)" />
+  <polygon fill="#44b356" points="37,27.309 41,25 41,35.392 37,37.702" />
+  <polygon fill="#44b356" points="12,17.494 16,15.185 16,22.113 12,24.423" />
+</svg>

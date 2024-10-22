@@ -1,0 +1,112 @@
+/* Contenedor principal */
+.acta-container {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 10mm;
+    box-sizing: border-box;
+    font-size: 14px;
+    margin: 0 auto;
+    border: 1px solid #000;
+    font-family: Arial, sans-serif;
+    line-height: 2;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* Encabezado */
+.acta-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+    .acta-header h1 {
+        font-size: 24px;
+        margin: 0;
+    }
+
+    .acta-header h2 {
+        font-size: 20px;
+        margin: 5px 0;
+    }
+
+    .acta-header h3 {
+        font-size: 18px;
+        margin: 5px 0;
+    }
+
+/* Cuerpo del acta */
+.acta-body {
+    margin-bottom: 30px;
+}
+
+    .acta-body p {
+        text-align: justify;
+        margin: 15px 35px;
+    }
+
+/* Firmas */
+.acta-signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -15px;
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+}
+
+.signature {
+    width: 45%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    page-break-inside: avoid;
+    margin-bottom: 1px;
+}
+
+    .signature p {
+        border-top: 1px solid #000;
+        margin-top: 100px;
+        font-weight: bold;
+        width: 65%;
+    }
+
+/* Pie de página */
+.acta-footer {
+    text-align: center;
+    margin-top: 50px;
+}
+
+    .acta-footer p {
+        margin: 5px 0;
+        font-weight: bold;
+    }
+
+/* Botones */
+.dx-button {
+    background-color: #0D6EFD;
+    color: #FFFFFF;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    box-shadow: none;
+    cursor: pointer;
+    width: auto;
+    min-width: 115px;
+    height: 30px;
+}
+
+    .dx-button:hover {
+        background-color: #0056b3;
+    }
+
+    .dx-button:active {
+        background-color: #004085;
+    }
+
+/* Estilo de los subtítulos */
+h3 {
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}

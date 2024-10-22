@@ -1,0 +1,154 @@
+﻿@page "/BscCatalog"
+@inject NavigationManager NavigationManager
+@inject IService<Bsc, int> BscService
+
+@using Audi100.Services
+@using Audi100.Models
+
+<h3>Catálogo de Bsc</h3>
+
+<!-- Contenedor principal con margen superior -->
+<div class="container mt-5">
+    <div class="row">
+        <!-- Columna izquierda - Formulario -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4>@(selectedReport?.BscId == 0 ? "Crear nuevo Bsc" : "Editar")</h4>
+                    <EditForm Model="selectedReport" OnValidSubmit="SaveReport">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <DxFormLayout>
+                            <DxFormLayoutGroup>
+                                <DxFormLayoutItem Caption="Descripción">
+                                    <ChildContent Context="formContext">
+                                        <InputText id="description" class="form-control" @bind-Value="selectedReport.Description" />
+                                    </ChildContent>
+                                </DxFormLayoutItem>
+                            </DxFormLayoutGroup>
+                        </DxFormLayout>
+
+
+                        <button type="submit" class="btn dx-button">
+                            @((selectedReport?.BscId == 0 ? "Guardar" : "Actualizar"))
+                        </button>
+
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha - Tabla -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Lista de Bsc</h4>
+                    @if (bsc != null && bsc.Any())
+                    {
+                        <DxGrid Data="@bsc" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
+                            <Columns>
+                                <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(Bsc.BscId)" Width="95px" />
+                                <DxGridDataColumn Caption="Descripción" FieldName="@nameof(Bsc.Description)" Width="350px" />
+                                <DxGridCommandColumn Width="150px">
+                                    <HeaderTemplate>
+                                        <span>Acciones</span>
+                                    </HeaderTemplate>
+                                    <CellDisplayTemplate Context="commandContext">
+                                        @if (commandContext.DataItem is Bsc bsc)
+                                        {
+                                            <div class="d-flex justify-content-start">
+                                                <DxButton Click="@(() => EditReport(bsc))" CssClass="btn btn-warning ml-2">
+                                                    Editar
+                                                </DxButton>
+                                                <DxButton Click="@(() => ConfirmDelete(bsc.BscId))" CssClass="btn btn-danger ml-2">
+                                                    Eliminar
+                                                </DxButton>
+                                            </div>
+                                            @if (bscIdToDelete == bsc.BscId && showConfirmDelete)
+                                            {
+                                                <div class="mt-2 alert alert-warning">
+                                                    ¿Seguro que quieres eliminar este hallazgo?
+                                                    <DxButton Click="@(() => DeleteReport(bsc.BscId))" CssClass="btn btn-danger ml-2">
+                                                        Sí
+                                                    </DxButton>
+                                                    <DxButton Click="@CancelDelete" CssClass="btn btn-secondary ml-2">
+                                                        No
+                                                    </DxButton>
+                                                </div>
+                                            }
+                                        }
+                                    </CellDisplayTemplate>
+                                </DxGridCommandColumn>
+                            </Columns>
+                        </DxGrid>
+                    }
+                    else
+                    {
+                        <p>Cargando o no se encontraron hallazgos...</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Bsc> bsc = new List<Bsc>();
+    private Bsc selectedReport = new Bsc();
+    private bool showConfirmDelete = false;
+    private int bscIdToDelete = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReports();
+    }
+
+    private async Task LoadReports()
+    {
+        bsc = (await BscService.GetListAsync()).ToList();
+    }
+
+    private async Task SaveReport()
+    {
+        if (selectedReport.BscId == 0)
+        {
+            await BscService.AddAsync(selectedReport);
+        }
+        else
+        {
+            await BscService.UpdateAsync(selectedReport);
+        }
+
+        await LoadReports();
+        ClearForm();
+    }
+
+    private async Task DeleteReport(int reportId)
+    {
+        await BscService.DeleteAsync(reportId);
+        await LoadReports();
+        CancelDelete();
+    }
+
+    private void EditReport(Bsc report)
+    {
+        selectedReport = report;
+    }
+
+    private void ClearForm()
+    {
+        selectedReport = new Bsc();
+    }
+
+    private void ConfirmDelete(int bscId)
+    {
+        bscIdToDelete = bscId;
+        showConfirmDelete = true;
+    }
+
+    private void CancelDelete()
+    {
+        showConfirmDelete = false;
+        bscIdToDelete = 0;
+    }
+}

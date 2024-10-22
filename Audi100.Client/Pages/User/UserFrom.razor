@@ -1,0 +1,231 @@
+﻿@page "/UserFrom"
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject IService<User, int> UserService
+
+@using System.Linq
+@using Audi100.Services
+@using Audi100.Models
+@using DevExpress.Blazor
+
+<EditForm Model="@userFrom" OnValidSubmit="HandleValidSubmit" Context="editFormContext">
+    <h3>@(userFrom.UserId == 0 ? "Crear Usuario" : "Editar Usuario")</h3>
+
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <div class="col-md-6">
+            <DxFormLayout>
+                <DxFormLayoutGroup Caption="Gestión de usuarios">
+                    <DxFormLayoutItem Caption="Nombre de usuario:" ColSpanMd="12">
+                        <DxMaskedInput @bind-Value="userFrom.UserName" />
+                        <ValidationMessage For="@(() => userFrom.UserName)" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Correo:" ColSpanMd="12">
+                        <DxMaskedInput @bind-Value="userFrom.UserEmail" />
+                        <ValidationMessage For="@(() => userFrom.UserEmail)" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Número de teléfono:">
+                        <DxMaskedInput @bind-Value="userFrom.UserPhone" Mask="@PhoneMask" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Asignar Rol:">
+                        <DxComboBox Data="@Role"
+                                    @bind-Value="userFrom.UserRoleId"
+                                    @bind-Value:after="@(async () => SetRole(userFrom.UserRoleId ?? 0))"
+                                    NullText="Seleccione un Rol"
+                                    ValueFieldName="Key"
+                                    TextFieldName="Value" />
+                        <ValidationMessage For="@(() => userFrom.UserRoleId)" />
+                    </DxFormLayoutItem>
+
+                    @if (userFrom.UserId == 0 || showPasswordField)
+                    {
+                        <DxFormLayoutItem Caption="Contraseña:" ColSpanMd="12">
+                            <DxMaskedInput type="password"
+                                           @bind-Value="userFrom.UserPassword"
+                                           NullText="Ingrese la contraseña" />
+                            <ValidationMessage For="@(() => userFrom.UserPassword)" />
+                        </DxFormLayoutItem>
+                    }
+                    else
+                    {
+                        <DxFormLayoutItem>
+                            <DxButton Text="Cambiar Contraseña" @onclick="TogglePasswordField" />
+                        </DxFormLayoutItem>
+                    }
+                </DxFormLayoutGroup>
+            </DxFormLayout>
+
+            <DxFormLayout>
+                <DxFormLayoutGroup>
+                    <DxFormLayoutItem>
+                        <button type="submit" class="dx-button">
+                            @((userFrom.UserId == 0 ? "Guardar" : "Actualizar"))
+                        </button>
+                        <DxButton RenderStyle="ButtonRenderStyle.Secondary"
+                                  Text="Regresar" @onclick="GoBack" />
+                    </DxFormLayoutItem>
+                </DxFormLayoutGroup>
+            </DxFormLayout>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Lista de Usuarios</h4>
+                    @if (user != null && user.Any())
+                    {
+                        <DxGrid Data="@user" ColumnResizeMode="GridColumnResizeMode.NextColumn"
+                                TextWrapEnabled="false" ShowSearchBox="true">
+                            <Columns>
+                                <DxGridDataColumn Caption="Id Usuario" FieldName="@nameof(User.UserId)" Width="45px" />
+                                <DxGridDataColumn Caption="Nombre de usuario" FieldName="@nameof(User.UserName)" />
+                                <DxGridDataColumn Caption="Correo" FieldName="@nameof(User.UserEmail)" />
+                                <DxGridDataColumn Caption="Número de teléfono" FieldName="@nameof(User.UserPhone)" />
+                                <DxGridDataColumn Caption="Rol" FieldName="@nameof(User.UserRole)" />
+                                <DxGridCommandColumn Width="150px">
+                                    <HeaderTemplate><span>Acciones</span></HeaderTemplate>
+                                    <CellDisplayTemplate Context="commandContext">
+                                        @if (commandContext.DataItem is User user)
+                                        {
+                                            <div class="d-flex justify-content-start">
+                                                <DxButton Click="@(() => EditReport(user))"
+                                                          CssClass="btn btn-warning ml-2">
+                                                    Editar
+                                                </DxButton>
+                                                <DxButton Click="@(() => ConfirmDelete(user.UserId))"
+                                                          CssClass="btn btn-danger ml-2">
+                                                    Eliminar
+                                                </DxButton>
+                                            </div>
+
+                                            @if (userIdToDelete == user.UserId && showConfirmDelete)
+                                            {
+                                                <div class="mt-2 alert alert-warning">
+                                                    ¿Seguro que quieres eliminar este usuario?
+                                                    <DxButton Click="@(() => DeleteReport(user.UserId))"
+                                                              CssClass="btn btn-danger ml-2">
+                                                        Sí
+                                                    </DxButton>
+                                                    <DxButton Click="@CancelDelete"
+                                                              CssClass="btn btn-secondary ml-2">
+                                                        No
+                                                    </DxButton>
+                                                </div>
+                                            }
+                                        }
+                                    </CellDisplayTemplate>
+                                </DxGridCommandColumn>
+                            </Columns>
+                        </DxGrid>
+                    }
+                    else
+                    {
+                        <p>Cargando o no se encontraron usuarios...</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private List<User> user = new List<User>();
+    private User userFrom = new User();
+    private bool showPasswordField = false;
+    private bool showConfirmDelete = false;
+    private int userIdToDelete = 0;
+    string PhoneMask { get; set; } = "00000000";
+
+    private Dictionary<int, string> Role = new Dictionary<int, string>
+    {
+        {1, "Admin"},
+        {2, "Auditor"},
+        {3, "Personal"}
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReports();
+    }
+
+    private async Task LoadReports()
+    {
+        user = (await UserService.GetListAsync()).ToList();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (userFrom.UserId == 0) // Creación
+        {
+            await UserService.AddAsync(userFrom);
+        }
+        else // Edición
+        {
+            var existingUser = await UserService.GetByKeyAsync(userFrom.UserId);
+
+            // Si el usuario no ingresó una nueva contraseña, no la enviamos
+            if (string.IsNullOrWhiteSpace(userFrom.UserPassword))
+            {
+                userFrom.UserPassword = existingUser.UserPassword; // Mantén la contraseña actual
+            }
+
+            await UserService.UpdateAsync(userFrom);
+        }
+
+        await LoadReports();
+        ClearForm();
+    }
+
+
+    private void TogglePasswordField()
+    {
+        showPasswordField = !showPasswordField;
+    }
+
+    private void EditReport(User report)
+    {
+        userFrom = report;
+        showPasswordField = false;
+    }
+
+    private void ClearForm()
+    {
+        userFrom = new User();
+    }
+
+    private void ConfirmDelete(int userId)
+    {
+        userIdToDelete = userId;
+        showConfirmDelete = true;
+    }
+
+    private void CancelDelete()
+    {
+        showConfirmDelete = false;
+        userIdToDelete = 0;
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/", forceLoad: false);
+    }
+
+    private void SetRole(int selectedRoleId)
+    {
+        if (Role.TryGetValue(selectedRoleId, out var roleName))
+        {
+            userFrom.UserRole = roleName;
+        }
+    }
+
+    private async Task DeleteReport(int userId)
+    {
+        await UserService.DeleteAsync(userId);
+        await LoadReports();
+        CancelDelete();
+    }
+}

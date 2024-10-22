@@ -1,0 +1,90 @@
+/*.row {
+    display: flex;
+}
+
+.col-md-6 {
+    flex: 1;
+    padding: 10px;
+}
+.container {
+    margin-top: 20px;
+}
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: none;
+    background-color: #ffffff;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+h4 {
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-warning {
+    background-color: #ffca28;
+    border: none;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    border: none;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+*/
+
+
+.dx-button {
+    background-color: #0D6EFD; /* Fondo azul claro */
+    color: #FFFFFF; /* Texto blanco */
+    border: none; /* Sin borde */
+    padding: 4px 12px; /* Ajusta el padding basado en la captura */
+    border-radius: 4px; /* Borde redondeado */
+    font-size: 14px; /* Ajusta el tamaño de la fuente */
+    box-shadow: none; /* Sin sombra adicional */
+    cursor: pointer; /* Cambia el cursor cuando se pasa por encima */
+    width: auto; /* Ancho automático para ajustarse al texto */
+    min-width: 115px; /* Ancho mínimo, según la imagen */
+    height: 30px; /* Altura del botón, según la imagen */
+}
+
+    .dx-button:hover {
+        background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
+    }
+
+    .dx-button:active {
+        background-color: #004085; /* Azul aún más oscuro cuando se hace clic */
+    }
+
+
+h3 {
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}

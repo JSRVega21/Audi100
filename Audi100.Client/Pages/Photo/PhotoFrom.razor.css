@@ -1,0 +1,214 @@
+/* Estilos generales */
+body {
+    background-color: #f4f7fa;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: transparent;
+    background: linear-gradient(to right, #000000, #ff0000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilos de los fieldsets */
+fieldset {
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+legend {
+    font-weight: bold;
+    font-size: 1.5em;
+    background: linear-gradient(to right, #000000, #ff0000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Estilos de las etiquetas */
+label {
+    font-weight: bold;
+    color: #000;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Estilos de los inputs */
+.form-control {
+    display: block;
+    width: 100%;
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+/* Estilos para botones */
+.btn {
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+/* Botón primario */
+.btn-primary {
+    background-color: #007bff;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+/* Botón secundario */
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+/* Espaciado entre elementos */
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+/* Ajustes de tabla */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+    .table th, .table td {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        color: #000;
+    }
+
+/* Sombra de contenedores */
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo adicional para el Select inspirado en DevExpress */
+select {
+    padding: 10px 15px;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    background-color: #f9fafb;
+    font-size: 14px;
+    color: #333;
+    width: 100%;
+    max-width: 100%;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+    select:focus {
+        border-color: #409eff;
+        box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.2);
+        outline: none;
+    }
+
+    select option {
+        padding: 8px;
+        color: #333;
+        background-color: #ffffff;
+    }
+
+    select:hover {
+        border-color: #a0aec0;
+    }
+
+    select option:disabled {
+        color: #bdbdbd;
+        background-color: #f5f5f5;
+    }
+
+/* Contenedor flexible para las fotos */
+.photo-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    gap: 20px; /* Espaciado entre las fotos */
+    justify-items: center; /* Centra las fotos en sus celdas */
+}
+
+/* Caja individual de cada foto */
+.photo-box {
+    background-color: #fff;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+    .photo-box:hover {
+        transform: scale(1.05); /* Zoom al pasar el mouse */
+    }
+
+/* Estilos de la imagen */
+.photo-img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 4px;
+    object-fit: cover; /* Mantener la relación de aspecto */
+}
+
+/* Spinner */
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

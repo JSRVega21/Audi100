@@ -1,0 +1,161 @@
+﻿@page "/AuditPrintView"
+@inject NavigationManager NavigationManager
+@inject IService<AuditPrint, int> AuditPrintService
+@inject IService<AuditFinding, int> AuditFindingService
+@inject IService<AuditReport, int> AuditReportService
+
+@using Audi100.Services
+@using Audi100.Models
+@using DevExpress.Blazor
+@using DevExpress.Export
+
+<h3>Control de Actas</h3>
+
+<div class="card">
+    <div class="card-body">
+        @if (AuditPrints != null && AuditPrints.Any())
+        {
+            <DxGrid @ref="Grid" Data="@AuditPrints" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
+                <Columns>
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.AuditPrintId)" Caption="Id Acta" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.ReportCode)" Caption="Codigo Informe"/>
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.DisplayName)" Caption="Descripción del informe" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.AuditorId1)" Caption="Auditor a cargo" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.DateI)" Caption="Fecha acta"  />
+                    <DxGridSelectionColumn Width="60px" />
+                        <DxGridCommandColumn Width="230px">
+                        <HeaderTemplate>
+                            <span>Acciones</span>
+                        </HeaderTemplate>
+                        <CellDisplayTemplate Context="commandContext">
+                            @if (commandContext.DataItem is AuditPrint AuditPrint)
+                            {
+                                <div class="d-flex justify-content-start">
+                                    <DxButton Click="@(() => Print(AuditPrint.AuditPrintId))"
+                                              CssClass="btn btn-danger ml-2">
+                                        Imprimir
+                                    </DxButton>
+                                    <DxButton Click="@(() => EditReport(AuditPrint.AuditPrintId))"
+                                              CssClass="btn btn-warning ml-2">
+                                        Editar
+                                    </DxButton>
+                                    <DxButton Click="@(() => ConfirmDelete(AuditPrint.AuditPrintId))"
+                                              CssClass="btn btn-danger ml-2">
+                                        Eliminar
+                                    </DxButton>
+                                 </div>
+
+                                @if (AuditPrintIdToDelete == AuditPrint.AuditPrintId && showConfirmDelete)
+                                {
+                                    <div class="mt-2 alert alert-warning">
+                                        ¿Seguro que quieres eliminar esta acta?
+                                        <DxButton Click="@(() => DeleteReport(AuditPrint.AuditPrintId))"
+                                                  CssClass="btn btn-danger ml-2">
+                                            Sí
+                                        </DxButton>
+                                        <DxButton Click="@CancelDelete" CssClass="btn btn-secondary ml-2">
+                                            No
+                                        </DxButton>
+                                    </div>
+                                }
+                            }
+                        </CellDisplayTemplate>
+                    </DxGridCommandColumn>
+                </Columns>
+                <ToolbarTemplate>
+                    <DxToolbar>
+                        <DxToolbarItem Text="Ajuste de columnas" Click="Grid_FitWidths" RenderStyle="ButtonRenderStyle.Secondary" />
+
+                        <DxToolbarItem Text="Excel" Click="ExportXlsx_Click" BeginGroup="true"/>
+                    </DxToolbar>
+                </ToolbarTemplate>
+            </DxGrid>
+        }
+        else
+        {
+            <p>Cargando o no se encontraron actas...</p>
+        }
+    </div>
+</div>
+
+<DxButton Click="CreateReport" CssClass="btn btn-success mb-3">
+    Crear Nueva acta
+</DxButton>
+
+@code {
+    private List<AuditReport> auditReports = new List<AuditReport>();
+    List<AuditPrint> AuditPrints = new List<AuditPrint>();
+    private bool showConfirmDelete = false;
+    private int AuditPrintIdToDelete = 0;
+    IGrid Grid { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReports();
+        await LoadAuditReports();
+    }
+
+    private async Task LoadReports()
+    {
+        AuditPrints = (await AuditPrintService.GetListAsync()).ToList();
+    }
+
+    private async Task LoadAuditReports()
+    {
+        auditReports = (await AuditReportService.GetListAsync()).ToList(); 
+    }
+
+    private void CreateReport()
+    {
+        NavigationManager.NavigateTo("/AuditPrintForm");
+    }
+
+    private void EditReport(int AuditPrintId)
+    {
+        NavigationManager.NavigateTo($"/AuditPrintForm/{AuditPrintId}");
+    }
+
+    private void Print(int AuditPrintId)
+    {
+        NavigationManager.NavigateTo($"/AuditPrintPrint/{AuditPrintId}");
+    }
+
+    private void ConfirmDelete(int AuditPrintId)
+    {
+        AuditPrintIdToDelete = AuditPrintId;
+        showConfirmDelete = true;
+    }
+
+    private void CancelDelete()
+    {
+        showConfirmDelete = false;
+        AuditPrintIdToDelete = 0;
+    }
+
+    private async Task DeleteReport(int AuditPrintId)
+    {
+        await AuditPrintService.DeleteAsync(AuditPrintId);
+        showConfirmDelete = false;
+        AuditPrintIdToDelete = 0;
+        await LoadReports();
+        StateHasChanged();
+    }
+
+    async Task ExportXlsx_Click()
+    {
+        string fileName = $"Datos Acta ({DateTime.Now})";
+        bool exportSelected = Grid.SelectedDataItems.Count > 0;
+
+        await Grid.ExportToXlsxAsync(fileName, new GridXlExportOptions()
+            {
+                ExportSelectedRowsOnly = exportSelected
+            });
+    }
+    void Grid_FitWidths()
+    {
+        Grid.AutoFitColumnWidths();
+    }
+
+
+
+}

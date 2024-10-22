@@ -1,0 +1,470 @@
+﻿@page "/AuditFindingForm/{AuditFindingId:int?}"
+@inject NavigationManager NavigationManager
+
+@inject IService<AuditFinding, int> AuditFindingService
+@inject IService<AuditReport, int> AuditReportService
+@inject IService<Weighing, int> WeighingService
+@inject IService<ShortF, int> ShortFService
+@inject IPhotoService<Photo, int> PhotoService
+@inject IHttpClientFactory HttpClientFactory
+
+@inject SqlService SqlService
+@inject HttpClient Http
+
+@using System.Linq
+@using Audi100.Services
+@using Audi100.Models
+@using DevExpress.Blazor
+@using System.IO
+@using Microsoft.AspNetCore.Components.Forms;
+
+
+<EditForm Model="@AuditFinding" OnValidSubmit="HandleValidSubmit" Context="editFromContext">
+    <!-- Encabezado -->
+    <h3>@(AuditFindingId.HasValue ? "Editar Hallazgos de Auditoría" : "Crear Hallazgos de Auditoría")</h3>
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Encabezado del hallazgo" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+
+            <!-- Código del Informe-->
+            <DxFormLayoutItem Caption="Código del Informe">
+                <DxComboBox Data="auditReport" 
+                            @bind-Value="AuditFinding.AuditReportId"
+                            ValueFieldName="@nameof(AuditReport.AuditReportId)"
+                            TextFieldName="@nameof(AuditReport.DisplayName)"
+                            @bind-Value:after="@(async () => SetDataReport(AuditFinding.AuditReportId))"
+                            SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains"
+                            ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Informe">
+                </DxComboBox>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Caption="" Visible="false">
+                <DxMaskedInput @bind-Value="@AuditFinding.DataReport"/>
+            </DxFormLayoutItem>
+
+            <!-- Fecha del hallazgo -->
+            <DxFormLayoutItem Caption="Fecha del hallazgo:">
+                <DxDateEdit @bind-Date="@AuditFinding.DateCreate" NullText="DD/MM/YYYY" />
+                <ValidationMessage For="@(() => AuditFinding.DateCreate)" />
+            </DxFormLayoutItem>
+
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Detalle del Hallazgo" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+
+            <!-- Título del hallazgo -->
+            <DxFormLayoutItem Caption="Título del hallazgo" ColSpanMd="4">
+                <DxTextBox @bind-Text="@AuditFinding.FindingTitle" NullText="Título del hallazgo" />
+                <ValidationMessage For="@(() => AuditFinding.FindingTitle)" />
+            </DxFormLayoutItem>
+
+            <!-- Número de hallazgos -->
+            <DxFormLayoutItem Caption="Número de hallazgo" ColSpanMd="4" >
+                <DxMaskedInput @bind-Value="@AuditFinding.NumberOfFindings" Mask="###" NullText="000" />
+                <ValidationMessage For="@(() => AuditFinding.NumberOfFindings)" />
+            </DxFormLayoutItem>
+
+             <!-- Hallazgo Nivel -->
+            <DxFormLayoutItem Caption="Nivel de Hallazgo" ColSpanMd="4">
+                <DxComboBox Data="@FindLevel" @bind-Value="AuditFinding.FindLevel" NullText="Seleccionar un Nivel" />
+                <ValidationMessage For="@(() => AuditFinding.FindLevel)" />
+            </DxFormLayoutItem>
+
+            <!-- Ponderación Clasificacion -->
+            <DxFormLayoutItem Caption="Clasificación de ponderación">
+                <DxComboBox Data="weighing" @bind-Value="AuditFinding.WeightingClassificationId"
+                            ValueFieldName="@nameof(Weighing.WeighingId)"
+                            TextFieldName="@nameof(Weighing.Description)"
+                            @bind-Value:after="@(async () => SetWeighting(AuditFinding.WeightingClassificationId))"
+                            SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains"
+                            ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione una ponderación">
+                </DxComboBox>
+                <ValidationMessage For="@(() => AuditFinding.WeightingClassificationId)" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="false" >
+                <DxMaskedInput @bind-Value="@AuditFinding.WeightingClassification" />
+            </DxFormLayoutItem>
+
+            <!-- Hallazgo nombre corto -->
+            <DxFormLayoutItem Caption="Hallazgo con nombre corto">
+                <DxComboBox Data="shortF" @bind-Value="AuditFinding.FindShortNameId"
+                            ValueFieldName="@nameof(ShortF.ShortFId)"
+                            TextFieldName="@nameof(ShortF.Description)"
+                            @bind-Value:after="@(async () => SetFindShort(AuditFinding.FindShortNameId))"
+                            SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains"
+                            ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Hallazgo corto">
+                </DxComboBox>
+                <ValidationMessage For="@(() => AuditFinding.FindShortNameId)" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="false">
+                <DxMaskedInput @bind-Value="@AuditFinding.FindShortName" />
+            </DxFormLayoutItem>
+
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Detalle del Hallazgo" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+
+            <!-- Ponderación negativa -->
+            <DxFormLayoutItem Caption="Ponderación (-)">
+                <DxMaskedInput @bind-Value="@AuditFinding.NegativeWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+            <!--Riesgo negativo -->
+            <DxFormLayoutItem Caption="Riesgo (-)">
+                <DxMaskedInput @bind-Value="@AuditFinding.NegativeRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+            <!-- Ponderación positiva -->
+            <DxFormLayoutItem Caption="Poderación (+)">
+                <DxMaskedInput @bind-Value="@AuditFinding.PositiveWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+            <!--Riesgo positivo -->
+            <DxFormLayoutItem Caption="Riesgo (+)">
+                <DxMaskedInput @bind-Value="@AuditFinding.PositiveRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+            <!-- Autorizado para informe -->
+            <DxFormLayoutItem Caption="Autorizado para informe">
+                <DxComboBox Data="Auditors" @bind-Value="AuditFinding.AuthorizedForReport" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Auditor" />
+            </DxFormLayoutItem>
+
+            <!-- Revisado por -->
+            <DxFormLayoutItem Caption="Revisado por">
+                <DxComboBox Data="Auditors" @bind-Value="AuditFinding.ReviewedBy" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Auditor" />
+            </DxFormLayoutItem>
+
+            <!-- Trabajo ejecutado por -->
+            <DxFormLayoutItem Caption="Trabajo ejecutado por">
+                <DxComboBox Data="Auditors" @bind-Value="AuditFinding.WorkExecutedBy" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Auditor" />
+            </DxFormLayoutItem>
+
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+    <div class="row">
+        <!-- Columna izquierda -->
+        <div class="col-md-6">
+            <DxFormLayout>
+                <DxFormLayoutGroup Caption="Descripción del Hallazgo" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+                    <!-- Condición -->
+                    <DxFormLayoutItem Caption="Condición" ColSpanMd="12">
+                        <DxMemo @bind-Text="@AuditFinding.ConditionAudit" NullText="¿Qué revisó y descripción general de hallazgos?" CssClass="h-100" />
+                    </DxFormLayoutItem>
+
+                    <!-- Criterio -->
+                    <DxFormLayoutItem Caption="Criterio" ColSpanMd="12">
+                        <DxMemo @bind-Text="@AuditFinding.CriterionAudit" NullText="¿Por qué es un hallazgo?" CssClass="h-100" />
+                    </DxFormLayoutItem>
+
+                    <!-- Fundamento -->
+                    <DxFormLayoutItem Caption="Fundamento" ColSpanMd="12">
+                        <DxMemo @bind-Text="@AuditFinding.BasisAudit" NullText="Base del criterio" CssClass="h-100" />
+                    </DxFormLayoutItem>
+
+                    <!-- Causa -->
+                    <DxFormLayoutItem Caption="Causa" ColSpanMd="12">
+                        <DxMemo @bind-Text="@AuditFinding.CauseAudit" NullText="Origen del hallazgo" CssClass="h-100" />
+                    </DxFormLayoutItem>
+
+                    <!-- Efecto -->
+                    <DxFormLayoutItem Caption="Efecto" ColSpanMd="12">
+                        <DxMemo @bind-Text="@AuditFinding.EffectAudit" NullText="¿Cómo afecta a la empresa el hallazgo?" CssClass="h-100" />
+                    </DxFormLayoutItem>
+
+                    <!-- Requerimiento de auditoría -->
+                    <DxFormLayoutItem Caption="Requerimiento de auditoría" ColSpanMd="12">
+                        <DxMemo @bind-Text="@AuditFinding.RequirementOfAudit" NullText="Plan de acción de la administración para corregir o prevenir" CssClass="h-100" />
+                    </DxFormLayoutItem>
+
+                    <!-- Plan de acción -->
+                    <DxFormLayoutItem Caption="Plan de acción" ColSpanMd="12">
+                        <DxMemo @bind-Text="@AuditFinding.PlanOfActionAudit" NullText="Seguimiento" CssClass="h-100" />
+                    </DxFormLayoutItem>
+
+                </DxFormLayoutGroup>
+            </DxFormLayout>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-md-6">
+            <DxFormLayout>
+                <DxFormLayoutGroup Caption="Detalle del hallazgo" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+                    <!-- Hallazgo Detalle -->
+                    <DxFormLayoutItem Caption="Hallazgo Detalle" ColSpanMd="12">
+                        <DxMemo @bind-Text="@AuditFinding.DetailFindingAudit" NullText="Hallazgo Detalle" CssClass="h-100"
+                                Rows="20"/>
+                    </DxFormLayoutItem>
+                    <ValidationMessage For="@(() => AuditFinding.DetailFindingAudit)" />
+                </DxFormLayoutGroup> 
+            </DxFormLayout>
+        </div>
+    </div>
+
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Apartado de archivos" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+            <DxFormLayoutItem Caption="Seleccione las imágenes o PDFs que desea cargar:" ColSpanMd="12">
+                <InputFile OnChange="OnInputFileChange" Multiple />
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+
+    <DxFormLayout>
+        <DxFormLayoutGroup>
+            <DxFormLayoutItem>
+                <button type="submit" class="dx-button">
+                    @(AuditFindingId.HasValue ? "Actualizar Hallazgo" : "Crear Hallazgo")
+                </button>
+                <DxButton RenderStyle="ButtonRenderStyle.Secondary" Text="Regresar" @onclick="GoBack" />
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+</EditForm>
+
+@code {
+
+    #region List
+    [Parameter] public int? AuditFindingId { get; set; }
+
+    private AuditFinding AuditFinding = new AuditFinding();
+    private List<AuditReport> auditReport { get; set; } = new List<AuditReport>();
+    private List<Weighing> weighing { get; set; } = new List<Weighing>();
+    private List<ShortF> shortF { get; set; } = new List<ShortF>();
+
+    private List<Employee> Auditors { get; set; } = new List<Employee>();
+
+    private List<string> FindLevel = new() { "Bajo", "Medio", "Alto" };
+
+    private Photo photo = new Photo(); 
+    private IBrowserFile file; 
+
+    #endregion
+
+    #region OnInitialized
+    protected override async Task OnInitializedAsync()
+    {
+        auditReport = (await AuditReportService.GetListAsync()).ToList();
+        weighing = (await WeighingService.GetListAsync()).ToList();
+        shortF = (await ShortFService.GetListAsync()).ToList();
+        Auditors = (await GetAuditor()).ToList();
+
+        if (AuditFindingId.HasValue)
+        {
+            AuditFinding = await AuditFindingService.GetByKeyAsync(AuditFindingId.Value) ?? new AuditFinding();
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            if (AuditFinding.AuditFindingId > 0)
+            {
+                var result = await AuditFindingService.UpdateAsync(AuditFinding);
+
+                if (result != null && result.AuditFindingId > 0)
+                {
+                    if (files.Count > 0)
+                    {
+                        using var content = new MultipartFormDataContent();
+                        content.Add(new StringContent(AuditFinding.AuditFindingId.ToString()), "auditFindingId");
+
+                        foreach (var file in files)
+                        {
+                            var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 500); // Límite de 500 MB
+
+                            var fileContent = new StreamContent(stream);
+                            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+                            content.Add(fileContent, "files", file.Name);
+                        }
+
+                        var client = HttpClientFactory.CreateClient("Audi100.Server");
+                        var response = await client.PostAsync("/api/Photo", content);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            NavigationManager.NavigateTo("/AuditFindingView");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Error al subir los archivos: {response.ReasonPhrase}");
+                        }
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo("/AuditFindingView");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error al actualizar el AuditFinding.");
+                }
+            }
+            else
+            {
+                var result = await AuditFindingService.AddAsync(AuditFinding);
+
+                if (result != null && result.AuditFindingId > 0)
+                {
+                    AuditFinding.AuditFindingId = result.AuditFindingId;
+
+                    if (files.Count > 0)
+                    {
+                        using var content = new MultipartFormDataContent();
+                        content.Add(new StringContent(AuditFinding.AuditFindingId.ToString()), "auditFindingId");
+
+                        foreach (var file in files)
+                        {
+                            var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 500); // Límite de 500 MB
+
+                            var fileContent = new StreamContent(stream);
+                            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+                            content.Add(fileContent, "files", file.Name);
+                        }
+
+                        var client = HttpClientFactory.CreateClient("Audi100.Server");
+                        var response = await client.PostAsync("/api/Photo", content);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            NavigationManager.NavigateTo("/AuditFindingView");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Error al subir los archivos: {response.ReasonPhrase}");
+                        }
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo("/AuditFindingView");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error al guardar el AuditFinding.");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar el hallazgo de auditoría: {ex.Message}");
+        }
+    }
+
+
+    #endregion
+
+    #region Employee
+    public async Task<IEnumerable<Employee>> GetAuditor()
+    {
+        var query = $"api/SqlData/GetAudit";
+        return await Http.GetFromJsonAsync<IEnumerable<Employee>>(query);
+    }
+    #endregion
+
+    #region Fuction
+    
+    private List<IBrowserFile> files = new List<IBrowserFile>();
+
+    private void OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        files.Clear();
+
+        foreach (var file in e.GetMultipleFiles())
+        {
+            if (file.Size > 1024 * 1024 * 500)
+            {
+                Console.WriteLine($"El archivo {file.Name} excede el límite de 500 MB.");
+                continue;
+            }
+
+            if (file.ContentType.StartsWith("image/") || file.ContentType == "application/pdf")
+            {
+                var stream = file.OpenReadStream(maxAllowedSize: long.MaxValue); 
+                files.Add(file);
+            }
+            else
+            {
+                Console.WriteLine("Solo se permiten imágenes y archivos PDF.");
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/AuditFindingView", forceLoad: false);
+    }
+
+    private void SetDataReport(int? selected)
+    {
+        AuditFinding.AuditReportId = selected ?? 0; 
+
+        var selectedObj = auditReport.FirstOrDefault(a => a.AuditReportId == (selected ?? 0));
+
+        if (selectedObj != null)
+        {
+            AuditFinding.DataReport = selectedObj.DisplayName3;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetWeighting(int? selected)
+    {
+        AuditFinding.WeightingClassificationId = selected ?? 0;
+
+        var selectedObj = weighing.FirstOrDefault(a => a.WeighingId == (selected ?? 0));
+
+        if (selectedObj != null)
+        {
+            AuditFinding.WeightingClassification = selectedObj.Description;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetFindShort(int? selected)
+    {
+        AuditFinding.FindShortNameId = selected ?? 0;
+
+        var selectedObj = shortF.FirstOrDefault(a => a.ShortFId == (selected ?? 0));
+
+        if (selectedObj != null)
+        {
+            AuditFinding.FindShortName = selectedObj.Description;
+        }
+
+        StateHasChanged();
+    }
+
+
+
+    #endregion
+}

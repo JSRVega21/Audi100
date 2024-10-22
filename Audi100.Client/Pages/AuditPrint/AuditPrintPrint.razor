@@ -1,0 +1,134 @@
+﻿@page "/AuditPrintPrint/{AuditPrintId:int}"
+@inject NavigationManager NavigationManager
+@inject IService<AuditPrint, int> AuditPrintService
+@inject IService<AuditFinding, int> AuditFindingService
+@inject IService<AuditReport, int> AuditReportService
+@inject IJSRuntime JS
+
+@using Audi100.Services
+@using Audi100.Models
+@using DevExpress.Blazor
+@using DevExpress.Blazor.Reporting
+@using System.Linq
+
+
+<h3>@(AuditPrintId.HasValue ? "Imprimir" : "Imprimir")</h3>
+
+@if (auditPrint != null)
+{
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Detalles del Acta">
+            <DxFormLayoutItem>
+                <div class="acta-container" id="actaPdfContent">
+                    <div class="acta-header">
+                        <h1>FFAC, SOCIEDAD ANÓNIMA</h1>
+                        <h2>Auditoría Interna <strong>@auditPrint.DateYear</strong></h2>
+                        <h3>ACTA - @auditPrint.ReportCode</h3>
+                    </div>
+
+                    <div class="acta-body">
+                        <p>
+                            En las instalaciones de <strong>@auditPrint.CostSeccionPrint</strong>, siendo las horas <strong>@auditPrint.DateTime</strong>,
+                            del día <strong>@auditPrint.DateDayText</strong>, reunidos personal de administración y de auditoría interna,
+                            @if (auditPrint.EmployeeId1 != null)
+                            {
+                                <strong>@auditPrint.EmployeeId1</strong>
+                            }
+                            @if (auditPrint.EmployeeId2 != null)
+                            {
+                                <strong>, @auditPrint.EmployeeId2</strong>
+                            }
+                            @if (auditPrint.EmployeeId3 != null)
+                            {
+                                <strong>, @auditPrint.EmployeeId3</strong>
+                            }
+                            @if (auditPrint.AuditorId1 != null)
+                            {
+                                <strong>, @auditPrint.AuditorId1</strong>
+                            }
+                            @if (auditPrint.AuditorId2 != null)
+                            {
+                                <strong>, @auditPrint.AuditorId2</strong>
+                            }
+                            @if (auditPrint.OtherEmployee != null)
+                            {
+                                <strong>, @auditPrint.OtherEmployee</strong>
+                            }
+                            @if (auditPrint.OtherEmployee2 != null)
+                            {
+                                <strong>, @auditPrint.OtherEmployee2</strong>
+                            }
+                            @if (auditPrint.OtherEmployee3 != null)
+                            {
+                                <strong>, @auditPrint.OtherEmployee3</strong>
+                            }
+                            @if (auditPrint.OtherEmployee4 != null)
+                            {
+                                <strong>, @auditPrint.OtherEmployee4</strong>
+                            };
+                            para dejar constancia de lo siguiente:
+                        </p>
+                        <p><strong>PRIMERO:</strong> Alcance de la Auditoría: @auditPrint.Part1.</p>
+                        <p><strong>SEGUNDO:</strong> Resumen de deficiencias encontradas: @auditPrint.Part2.</p>
+                        <p><strong>TERCERO:</strong> Acciones: @auditPrint.Part3.</p>
+                        <p>
+                            <strong>CUARTO:</strong> Siendo las horas de <strong>@auditPrint.DateTime</strong>,
+                            no habiendo más que hacer constar, se da por concluida la reunión de Resultados de la Auditoría, enterados firmamos.
+                        </p>
+                    </div>
+
+                    <div class="acta-signatures">
+                        <div class="signature"><p>Administrador</p></div>
+                        <div class="signature"><p>Auditor a cargo de la auditoria</p></div>
+                    </div>
+                    <div class="acta-signatures">
+                        <div class="signature"><p>Bodeguero bodega grande</p></div>
+                        <div class="signature"><p>Auditor</p></div>
+                    </div>
+                    <div class="acta-signatures">
+                        <div class="signature"><p>Bodeguero bodega pequeña</p></div>
+                        <div class="signature"><p>Auditor</p></div>
+                    </div>
+
+                    <div class="acta-footer">
+                        <p>Gerente de Auditoría Interna</p>
+                        <p>Fecha: @auditPrint.DateDayText</p>
+                    </div>
+                </div>
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+
+        <DxFormLayoutGroup>
+            <DxFormLayoutItem>
+                <button class="dx-button" @onclick="GeneratePdf">Generar PDF</button>
+                <DxButton RenderStyle="ButtonRenderStyle.Secondary" Text="Regresar" @onclick="GoBack" />
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+}
+else
+{
+    <p>Cargando detalles del acta...</p>
+}
+
+@code {
+    [Parameter]
+    public int? AuditPrintId { get; set; }
+
+    private AuditPrint auditPrint;
+
+    protected override async Task OnInitializedAsync()
+    {
+        auditPrint = await AuditPrintService.GetByKeyAsync(AuditPrintId.Value);
+    }
+
+    private async Task GeneratePdf()
+    {
+        await JS.InvokeVoidAsync("GeneratePdfFromHtml", "actaPdfContent");
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/AuditPrintView", forceLoad: false);
+    }
+}

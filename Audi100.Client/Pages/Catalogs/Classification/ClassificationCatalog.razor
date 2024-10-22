@@ -1,0 +1,155 @@
+﻿@page "/ClassificationCatalog"
+@inject NavigationManager NavigationManager
+@inject IService<Classification, int> ClassificationService
+
+@using Audi100.Services
+@using Audi100.Models
+
+<h3>Catálogo de Clasificación</h3>
+
+<!-- Contenedor principal con margen superior -->
+<div class="container mt-5">
+    <div class="row">
+        <!-- Columna izquierda - Formulario -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4>@(selectedReport?.ClassificationId == 0 ? "Crear nueva Clasificación" : "Editar")</h4>
+                    <EditForm Model="selectedReport" OnValidSubmit="SaveReport">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <DxFormLayout>
+                            <DxFormLayoutGroup>
+                                <DxFormLayoutItem Caption="Descripción">
+                                    <ChildContent Context="formContext">
+                                        <InputText id="description" class="form-control" @bind-Value="selectedReport.Description" />
+                                    </ChildContent>
+                                </DxFormLayoutItem>
+                            </DxFormLayoutGroup>
+                        </DxFormLayout>
+
+
+                        <button type="submit" class="btn dx-button">
+                            @((selectedReport?.ClassificationId == 0 ? "Guardar" : "Actualizar"))
+                        </button>
+
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha - Tabla -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Lista de Clasificación</h4>
+                    @if (classification != null && classification.Any())
+                    {
+                        <DxGrid Data="@classification" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
+                            <Columns>
+                                <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(Classification.ClassificationId)" Width="95px" />
+                                <DxGridDataColumn Caption="Descripción" FieldName="@nameof(Classification.Description)" Width="350px" />
+                                <DxGridCommandColumn Width="150px">
+                                    <HeaderTemplate>
+                                        <span>Acciones</span>
+                                    </HeaderTemplate>
+                                    <CellDisplayTemplate Context="commandContext">
+                                        @if (commandContext.DataItem is Classification Classification)
+                                        {
+                                            <div class="d-flex justify-content-start">
+                                                <DxButton Click="@(() => EditReport(Classification))" CssClass="btn btn-warning ml-2">
+                                                    Editar
+                                                </DxButton>
+                                                <DxButton Click="@(() => ConfirmDelete(Classification.ClassificationId))" CssClass="btn btn-danger ml-2">
+                                                    Eliminar
+                                                </DxButton>
+                                            </div>
+                                            @if (ClassificationIdToDelete == Classification.ClassificationId && showConfirmDelete)
+                                            {
+                                                <div class="mt-2 alert alert-warning">
+                                                    ¿Seguro que quieres eliminar este hallazgo?
+                                                    <DxButton Click="@(() => DeleteReport(Classification.ClassificationId))" CssClass="btn btn-danger ml-2">
+                                                        Sí
+                                                    </DxButton>
+                                                    <DxButton Click="@CancelDelete" CssClass="btn btn-secondary ml-2">
+                                                        No
+                                                    </DxButton>
+                                                </div>
+                                            }
+                                        }
+                                    </CellDisplayTemplate>
+                                </DxGridCommandColumn>
+                            </Columns>
+                        </DxGrid>
+                    }
+                    else
+                    {
+                        <p>Cargando o no se encontraron hallazgos...</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool showConfirmDelete = false;
+    private int ClassificationIdToDelete = 0;
+    private List<Classification> classification = new List<Classification>();
+    private Classification selectedReport = new Classification();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReports();
+    }
+
+    private async Task LoadReports()
+    {
+        classification = (await ClassificationService.GetListAsync()).ToList();
+    }
+
+    private async Task SaveReport()
+    {
+        if (selectedReport.ClassificationId == 0)
+        {
+            await ClassificationService.AddAsync(selectedReport);
+        }
+        else
+        {
+            await ClassificationService.UpdateAsync(selectedReport);
+        }
+
+        await LoadReports();
+        ClearForm();
+    }
+
+    private async Task DeleteReport(int reportId)
+    {
+        await ClassificationService.DeleteAsync(reportId);
+        await LoadReports();
+        CancelDelete();
+    }
+
+    private void EditReport(Classification report)
+    {
+        selectedReport = report;
+    }
+
+    private void ClearForm()
+    {
+        selectedReport = new Classification();
+    }
+
+    private void ConfirmDelete(int ClassificationId)
+    {
+        ClassificationIdToDelete = ClassificationId;
+        showConfirmDelete = true;
+    }
+
+    private void CancelDelete()
+    {
+        showConfirmDelete = false;
+        ClassificationIdToDelete = 0;
+    }
+}

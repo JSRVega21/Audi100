@@ -1,0 +1,497 @@
+﻿@page "/AuditReportForm/{AuditReportId:int?}"
+@inject NavigationManager NavigationManager
+
+@inject IService<AuditReport, int> AuditReportService
+@inject IService<Bsc, int> BscService
+@inject IService<Classification, int> ClassificationService
+
+@inject SqlService SqlService
+@inject HttpClient Http
+
+@using Audi100.Services
+@using Audi100.Models
+@using DevExpress.Blazor
+
+<EditForm Model="@auditReport" OnValidSubmit="HandleValidSubmit" Context="editFromContext">
+    <h3>@(AuditReportId.HasValue ? "Editar Informe de Auditoría" : "Crear Informe de Auditoría")</h3>
+
+    <DataAnnotationsValidator />
+    <!-- Encabezado del informe -->
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Encabezado del informe" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+
+            <!-- Codigo del informe -->
+            <DxFormLayoutItem Caption="Código del informe" ColSpanMd="4">
+                <DxTextBox @bind-Text="auditReport.ReportCode" ReadOnly="true" NullText="El código se genera al guardar" />
+            </DxFormLayoutItem>
+
+        <!-- Periodo -->
+            <DxFormLayoutItem Caption="Periodo (Mes y Año)" ColSpanMd="4">
+                <DxTextBox @bind-Text="auditReport.PeriodString" type="month" />
+                <ValidationMessage For="@(() => auditReport.PeriodString)" />
+            </DxFormLayoutItem>
+
+        <!-- Prioridad -->
+            <DxFormLayoutItem Caption="Prioridad de la revisión" ColSpanMd="4">
+                <DxComboBox Data="@priorities" @bind-Value="auditReport.ReviewPriority" NullText="Seleccionar una Prioridad" />
+            </DxFormLayoutItem>
+
+        <!-- Centro de costo -->
+            <DxFormLayoutItem Caption="Centro de Costo:">
+                <Select @onchange="OnDeptoChange">
+                    <option value="">Seleccione un Centro de Costo</option>
+                    @foreach (var depto in Departamentos.DistinctBy(d => d.nomDepto))
+                    {
+                        <option value="@depto.nomDepto">@depto.nomDepto</option>
+                    }
+                </Select>
+
+                <span>&nbsp;</span>
+                <DxTextBox @bind-Text="auditReport.nomDepto" ReadOnly="true" />
+
+            </DxFormLayoutItem>
+
+
+        <!-- Divisiones -->
+            <DxFormLayoutItem Caption="Divisiones:">
+                @if (Divisiones != null && Divisiones.Any())
+                {
+                    <Select @onchange="OnDivisionChange">
+                        <option value="">Seleccione una División</option>
+                        @foreach (var division in Divisiones.DistinctBy(d => d.nomDivision))
+                        {
+                            <option value="@division.nomDivision">@division.nomDivision</option>
+                        }
+                    </Select>
+                    <span>&nbsp;</span>
+                    <DxTextBox @bind-Text="auditReport.nomDivision" ReadOnly="true" />
+                }
+            </DxFormLayoutItem>
+
+
+        <!-- Secciones -->
+            <DxFormLayoutItem Caption="Secciónes:">
+                @if (Secciones != null && Secciones.Any())
+                {
+                    <Select @onchange="OnSeccionChange">
+                        <option value="">Seleccione una Sección</option>
+                        @foreach (var seccion in Secciones.DistinctBy(d => d.nomSeccion))
+                        {
+                            <option value="@seccion.nomSeccion">@seccion.nomSeccion</option>
+                        }
+                    </Select>
+                    <span>&nbsp;</span>
+                    <DxTextBox @bind-Text="auditReport.nomSeccion" ReadOnly="true" />
+                }
+             </DxFormLayoutItem>
+        <!-- Nombre Completo -->
+            <DxFormLayoutItem Caption="Nombre Completo:">
+                @if (NombresCompletos != null && NombresCompletos.Any())
+                {
+                    <Select @onchange="OnNombreCompletoChange">
+                        <option value="">Seleccione un Nombre Completo</option>
+                        @foreach (var nombre in NombresCompletos.DistinctBy(d => d.nomCompleto))
+                        {
+                            <option value="@nombre.nomCompleto">@nombre.nomCompleto</option>
+                        }
+                    </Select>
+                    <span>&nbsp;</span>
+                    <DxTextBox @bind-Text="auditReport.nomCompleto" ReadOnly="true" />
+                }
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+    <!-- Fechas del informe -->
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Fechas del informe" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+        <!-- Fecha Revisión del -->
+            <DxFormLayoutItem Caption="Revisón del:" ColSpanMd="4">
+                <DxDateEdit @bind-Date="@auditReport.ReviewdateOf" NullText="DD/MM/YYYY" />
+            </DxFormLayoutItem>
+
+            <!-- Fecha Revisión al -->
+            <DxFormLayoutItem Caption="Revisión al:" ColSpanMd="4">
+                <DxDateEdit @bind-Date="@auditReport.ReviewdateAt" NullText="DD/MM/YYYY" />
+            </DxFormLayoutItem>
+
+            <!-- Fecha de Creación -->
+            <DxFormLayoutItem Caption="Fecha de Creación:" ColSpanMd="4">
+                <DxDateEdit @bind-Date="@auditReport.CreationDate" NullText="DD/MM/YYYY" />
+                <ValidationMessage For="@(() => auditReport.CreationDate)" />
+            </DxFormLayoutItem>
+
+            <!-- Fecha de Modificación -->
+            <DxFormLayoutItem Caption="Fecha de Modificación:">
+                <DxDateEdit @bind-Date="@auditReport.ModificationDate" NullText="DD/MM/YYYY" />
+            </DxFormLayoutItem>
+
+            <!-- Fecha prevista para iniciar -->
+            <DxFormLayoutItem Caption="Fecha prevista para iniciar:">
+                <DxDateEdit @bind-Date="@auditReport.ExpectedDate" NullText="DD/MM/YYYY" />
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+    <!-- Planificación del informe  -->
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Planificicación del informe" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+            <!--Origen de la revisión-->
+            <DxFormLayoutItem Caption="Origen de Revisión :">
+                <DxComboBox Data="@origin" @bind-Value="auditReport.OriginOfTheReview" NullText="Seleccione un Origen" />
+                <ValidationMessage For="@(() => auditReport.OriginOfTheReview)" />
+            </DxFormLayoutItem>
+
+            <!-- Clasificación de revisión -->
+            <DxFormLayoutItem Caption="Clasificación de Revisión">
+                <DxComboBox Data="ClassificationsList" @bind-Value="auditReport.ClassificationId" ValueFieldName="@nameof(Classification.ClassificationId)"
+                            TextFieldName="@nameof(Classification.Description)" SearchMode="@ListSearchMode.AutoSearch"
+                            @bind-Value:after="@(async () => SetClassification(auditReport.ClassificationId))"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione una Clasificación" />
+                <ValidationMessage For="@(() => auditReport.ClassificationId)" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="false">
+                <DxMaskedInput @bind-Value="@auditReport.Classification" />
+            </DxFormLayoutItem>
+
+            <!-- BSC Indicador -->
+            <DxFormLayoutItem Caption="BSC Indicador">
+                <DxComboBox Data="BscList" @bind-Value="auditReport.BscId" ValueFieldName="@nameof(Bsc.BscId)"
+                            TextFieldName="@nameof(Bsc.Description)" SearchMode="@ListSearchMode.AutoSearch"
+                            @bind-Value:after="@(async () => SetBsc(auditReport.BscId))"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Indicador " />
+                <ValidationMessage For="@(() => auditReport.BscId)" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="false" >
+                <DxMaskedInput @bind-Value="@auditReport.Bsc" />
+            </DxFormLayoutItem>
+
+            <!--Descripción del informe-->
+            <DxFormLayoutItem Caption="Descripción del informe">
+                <DxMemo @bind-Text="@auditReport.ReportDescription" NullText="Descripción del informe" />
+                <ValidationMessage For="@(() => auditReport.ReportDescription)" />
+            </DxFormLayoutItem>
+
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+    <!-- Detalle del informe -->
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Detalle del informe" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+
+            <!--Titulo del informe-->
+            <DxFormLayoutItem Caption="Titulo del informe" ColSpanMd="12">
+                <DxTextBox @bind-Text="auditReport.ReportTitle" NullText="Titulo del informe" />
+                <ValidationMessage For="@(() => auditReport.ReportTitle)" />
+            </DxFormLayoutItem>
+
+            <!-- Fecha del informe -->
+            <DxFormLayoutItem Caption="Fecha del informe:">
+                <DxDateEdit @bind-Date="@auditReport.ReportDate" NullText="DD/MM/YYYY" />
+                <ValidationMessage For="@(() => auditReport.ReportDate)" />
+            </DxFormLayoutItem>
+
+            <!-- Faltante por diferencias -->
+            <DxFormLayoutItem Caption="Faltante por diferencias:">
+                <DxMaskedInput @bind-Value="@auditReport.Shortage" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+            <!-- Faltante cruzado por diferencias -->
+            <DxFormLayoutItem Caption="Faltante por cruce de mercaderías">
+                <DxMaskedInput @bind-Value="@auditReport.CrossShortage" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+
+            <!-- Sobrante por diferencias -->
+            <DxFormLayoutItem Caption="Sobrante por diferencias:">
+                <DxMaskedInput @bind-Value="@auditReport.Excess" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+            <!-- Sobrante cruzado por mercaderías -->
+            <DxFormLayoutItem Caption="Sobrante por cruce de mercaderías:">
+                <DxMaskedInput @bind-Value="@auditReport.CrossExcess" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+            <!-- Diferencias en Qtz -->
+            <DxFormLayoutItem Caption="Diferencias en Qtz:">
+                <DxMaskedInput @bind-Value="@auditReport.MissingInQ" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+            </DxFormLayoutItem>
+
+            <!-- Auditor  -->
+            <DxFormLayoutItem Caption="Auxilitar Auditor:">
+                <DxComboBox Data="Auditors" @bind-Value="auditReport.AuditorId1" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Auditor" />
+            </DxFormLayoutItem>
+
+            <!-- Responsable  -->
+            <DxFormLayoutItem Caption="Responsable:">
+                <DxComboBox Data="Employees" @bind-Value="auditReport.EmployeeId1" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Responsable" />
+            </DxFormLayoutItem>
+
+            <!-- Auditor 2 -->
+            <DxFormLayoutItem Caption="Auxilitar Auditor 2:">
+                <DxComboBox Data="Auditors" @bind-Value="auditReport.AuditorId2" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Auditor" />
+            </DxFormLayoutItem>
+
+            <!-- Responsable Auxiliar 2 -->
+            <DxFormLayoutItem Caption="Responsable 2">
+                <DxComboBox Data="Employees" @bind-Value="auditReport.EmployeeId2" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Responsable" />
+            </DxFormLayoutItem>
+
+            <!-- Administrador de unidad de auditoria  -->
+            <DxFormLayoutItem Caption="Administrador de unidad de auditoria:">
+                <DxComboBox Data="Auditors" @bind-Value="auditReport.AuditorId3" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Auditor" />
+            </DxFormLayoutItem>
+
+            <!-- Responsable Auxiliar 3  -->
+            <DxFormLayoutItem Caption="Responsable 3:">
+                <DxComboBox Data="Employees" @bind-Value="auditReport.EmployeeId3" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Responsable" />
+            </DxFormLayoutItem>
+
+            <!--Horas-->
+            <DxFormLayoutItem Caption="Horas" ColSpanMd="4">
+                <DxMaskedInput @bind-Value="@auditReport.Hours" Mask="#,###,###,###0.##" NullText="0,000.00" />
+            </DxFormLayoutItem>
+
+            <!--Total de horas en estar revisando-->
+            <DxFormLayoutItem Caption="Total de horas en estar revisando" ColSpanMd="4">
+                <DxMaskedInput @bind-Value="@auditReport.HoursInReviwe" Mask="#,###,###,###0.##" NullText="0,000.00" />
+            </DxFormLayoutItem>
+
+            <!--Validación de horas reales-->
+            <DxFormLayoutItem Caption="Validación de horas reales" ColSpanMd="4">
+                <DxMaskedInput @bind-Value="@auditReport.VariationOfHours" Mask="#,###,###,###0.##" NullText="0,000.00" />
+            </DxFormLayoutItem>
+
+
+            <!--Observaciones de responsables de unidad auditada-->
+            <DxFormLayoutItem Caption="Observaciones de responsables de unidad auditada " ColSpanMd="12">
+                <DxMemo @bind-Text="@auditReport.AuditObservations" NullText="Observaciones" />
+            </DxFormLayoutItem>
+
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+    <DxFormLayout>
+        <DxFormLayoutGroup>
+            <DxFormLayoutItem>
+                <button type="submit" class="dx-button">
+                    @(AuditReportId.HasValue ? "Actualizar" : "Crear")
+                </button>
+                <DxButton RenderStyle="ButtonRenderStyle.Secondary" Text="Regresar" @onclick="GoBack" />
+            </DxFormLayoutItem> 
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+</EditForm>
+
+@code {
+
+    #region List
+
+    [Parameter] public int? AuditReportId { get; set; }
+    private AuditReport auditReport = new AuditReport();
+
+    private List<CostCenter> Departamentos { get; set; } = new List<CostCenter>();
+    private List<CostCenter> Divisiones { get; set; } = new List<CostCenter>();
+    private List<CostCenter> Secciones { get; set; } = new List<CostCenter>();
+    private List<CostCenter> NombresCompletos { get; set; } = new List<CostCenter>();
+
+    private List<Bsc> BscList { get; set; } = new List<Bsc>();
+    private List<Classification> ClassificationsList { get; set; } = new List<Classification>();
+
+    private List<Employee> Auditors { get; set; } = new List<Employee>();
+    private List<Employee> Employees { get; set; } = new List<Employee>();
+
+    #endregion
+
+    #region List Disc
+    private List<string> priorities = new() { "Baja", "Media", "Alta", "Razonable" };
+    private List<string> origin = new() { "Planificaciada", "Solicitada", "Extraordinaria" };
+    #endregion
+
+    #region OnInitialized
+    protected override async Task OnInitializedAsync()
+    {
+        Departamentos = (await GetCenterCostList()).ToList();
+        BscList = (await BscService.GetListAsync()).ToList();
+        ClassificationsList = (await ClassificationService.GetListAsync()).ToList();
+        Auditors = (await GetAuditor()).ToList();
+        Employees = (await GetEmployee()).ToList();
+
+        if (AuditReportId.HasValue)
+        {
+            auditReport = await AuditReportService.GetByKeyAsync(AuditReportId.Value) ?? new AuditReport();
+            await LoadInitialDataAsync();
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            if (AuditReportId.HasValue)
+            {
+                await AuditReportService.UpdateAsync(auditReport);
+            }
+            else
+            {
+                await AuditReportService.AddAsync(auditReport);
+            }
+            NavigationManager.NavigateTo("/AuditReportView");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar el informe: {ex.Message}");
+        }
+    }
+    #endregion  
+    
+    #region CostCenter
+
+    private async Task LoadInitialDataAsync()
+    {
+        if (!string.IsNullOrEmpty(auditReport.nomDepto))
+        {
+            Divisiones = await LoadDivisiones(auditReport.nomDepto);
+        }
+        if (!string.IsNullOrEmpty(auditReport.nomDivision))
+        {
+            Secciones = await LoadSecciones(auditReport.nomDepto, auditReport.nomDivision);
+        }
+        if (!string.IsNullOrEmpty(auditReport.nomSeccion))
+        {
+            NombresCompletos = await LoadNombresCompleto(auditReport.nomDepto, auditReport.nomDivision, auditReport.nomSeccion);
+        }
+    }
+
+    private async Task OnDeptoChange(ChangeEventArgs e)
+    {
+        auditReport.nomDepto = e.Value.ToString();
+        Divisiones = await LoadDivisiones(auditReport.nomDepto);
+        Secciones.Clear();
+        NombresCompletos.Clear();
+    }
+
+    private async Task OnDivisionChange(ChangeEventArgs e)
+    {
+        auditReport.nomDivision = e.Value.ToString();
+        Secciones = await LoadSecciones(auditReport.nomDepto, auditReport.nomDivision);
+        NombresCompletos.Clear();
+    }
+
+    private async Task OnSeccionChange(ChangeEventArgs e)
+    {
+        auditReport.nomSeccion = e.Value.ToString();
+        NombresCompletos = await LoadNombresCompleto(auditReport.nomDepto, auditReport.nomDivision, auditReport.nomSeccion);
+    }
+
+    private async Task OnNombreCompletoChange(ChangeEventArgs e)
+    {
+        auditReport.nomCompleto = e.Value.ToString();
+    }
+
+    public async Task<IEnumerable<CostCenter>> GetCenterCostList(string nomDepto = null, string nomDivision = null, string nomSeccion = null, string nomCompleto = null)
+    {
+        var query = $"api/SqlData/GetCostCenter?nomDepto={nomDepto}&nomDivision={nomDivision}&nomSeccion={nomSeccion}&nomCompleto={nomCompleto}";
+        return await Http.GetFromJsonAsync<IEnumerable<CostCenter>>(query);
+    }
+
+    private async Task<List<CostCenter>> LoadDivisiones(string nomDepto)
+    {
+        return await Http.GetFromJsonAsync<List<CostCenter>>($"api/SqlData/GetCostCenter?nomDepto={nomDepto}");
+    }
+
+    private async Task<List<CostCenter>> LoadSecciones(string nomDepto, string nomDivision)
+    {
+        return await Http.GetFromJsonAsync<List<CostCenter>>($"api/SqlData/GetCostCenter?nomDepto={nomDepto}&nomDivision={nomDivision}");
+    }
+
+    private async Task<List<CostCenter>> LoadNombresCompleto(string nomDepto, string nomDivision, string nomSeccion)
+    {
+        return await Http.GetFromJsonAsync<List<CostCenter>>($"api/SqlData/GetCostCenter?nomDepto={nomDepto}&nomDivision={nomDivision}&nomSeccion={nomSeccion}");
+    }
+
+    #endregion
+
+    #region Employee
+    public async Task<IEnumerable<Employee>> GetAuditor()
+    {
+        var query = $"api/SqlData/GetAudit";
+        return await Http.GetFromJsonAsync<IEnumerable<Employee>>(query);
+    }
+
+    public async Task<IEnumerable<Employee>> GetEmployee()
+    {
+        var query = $"api/SqlData/GetEmployee";
+        return await Http.GetFromJsonAsync<IEnumerable<Employee>>(query);
+    }
+    #endregion
+
+    #region ExtraModels
+    public class CostCenter
+    {
+        public string nomDepto { get; set; }
+        public string nomDivision { get; set; }
+        public string nomSeccion { get; set; }
+        public string nomCompleto { get; set; }
+    }
+    #endregion
+
+    #region funtions
+
+    private void SetClassification(int? selected)
+    {
+        auditReport.ClassificationId = selected ?? 0;
+
+        var selectedObj = ClassificationsList.FirstOrDefault(a => a.ClassificationId == (selected ?? 0));
+
+        if (selectedObj != null)
+        {
+            auditReport.Classification = selectedObj.Description;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetBsc(int? selected)
+    {
+        auditReport.BscId = selected ?? 0;
+
+        var selectedObj = BscList.FirstOrDefault(a => a.BscId == (selected ?? 0));
+
+        if (selectedObj != null)
+        {
+            auditReport.Bsc = selectedObj.Description;
+        }
+
+        StateHasChanged();
+    }
+
+    #endregion
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/AuditReportView", forceLoad: false);
+    }
+}

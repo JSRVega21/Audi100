@@ -1,0 +1,202 @@
+﻿@* <div class="top-row ps-3 navbar navbar-dark custom-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">App Auditoria</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleMenuReport">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <img src="icons/Principal.svg" alt="Icono Audit" class="icono-menu" /> Auditoría
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showUserMenu)">
+                <img src="icons/User.svg" alt="Icon Report" class="icono-menu" /> Gestión de usuarios
+
+                @((showUserMenu ? "▲" : "▼"))
+            </a>
+            @if (showUserMenu)
+            {
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="UserFrom">
+                            <img src="icons/UserFrom.svg" alt="Icon Report" class="icono-menu" /> Usuarios
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showAuditReportMenu)">
+                <img src="icons/Report.svg" alt="Icon Report" class="icono-menu" /> Informe
+
+                @((showAuditReportMenu ? "▲" : "▼"))
+            </a>
+            @if (showAuditReportMenu)
+            {
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AuditReportView">
+                            <img src="icons/ViewAudit.svg" alt="Icon Report" class="icono-menu" /> Ver Informes
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AuditReportForm">
+                            <img src="icons/CreateAudit.svg" alt="Icon Report" class="icono-menu" /> Crear Informe
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showAuditFindingMenu)">
+                <img src="icons/Finding.svg" alt="Icono Findig" class="icono-menu" /> Hallazgos
+                @((showAuditFindingMenu ? "▲" : "▼"))
+            </a>
+            @if (showAuditFindingMenu)
+            {
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AuditFindingView">
+                            <img src="icons/ViewAudit.svg" alt="Icono Findig" class="icono-menu" /> Ver Hallazgo
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AuditFindingForm">
+                            <img src="icons/CreateAudit.svg" alt="Icono Findig" class="icono-menu" /> Crear Hallazgo
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showAuditFollowMenu)">
+                <img src="icons/Synchronize.svg" alt="Icono Findig" class="icono-menu" /> Seguimiento
+                @((showAuditFollowMenu ? "▲" : "▼"))
+            </a>
+            @if (showAuditFollowMenu)
+            {
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AuditTrailView">
+                            <img src="icons/ViewAudit.svg" alt="Icono Findig" class="icono-menu" /> Ver Seguimientos
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AuditTrailForm">
+                            <img src="icons/CreateAudit.svg" alt="Icono Findig" class="icono-menu" /> Crear Seguimiento
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showPrintMenu)">
+                <img src="icons/Print.svg" alt="Icon Report" class="icono-menu" /> Imprimir Acta
+
+                @((showPrintMenu ? "▲" : "▼"))
+            </a>
+            @if (showPrintMenu)
+            {
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AuditPrintView">
+                            <img src="icons/ViewAudit.svg" alt="Icon Report" class="icono-menu" /> Ver Actas
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AuditPrintForm">
+                            <img src="icons/CreateAudit.svg" alt="Icon Report" class="icono-menu" /> Crear Acta
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showPhotoMenu)">
+                <img src="icons/Photo.svg" alt="Icon Report" class="icono-menu" /> Fotos
+
+                @((showPhotoMenu ? "▲" : "▼"))
+            </a>
+            @if (showPhotoMenu)
+            {
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="Photo">
+                            <img src="icons/ViewPhoto.svg" alt="Icon Report" class="icono-menu" /> Ver Fotos
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showCatalogsMenu)">
+                <img src="icons/Catalogs.svg" alt="Icon Catalog" class="icono-menu" />   Catálogos
+                @((showCatalogsMenu ? "▲" : "▼"))
+            </a>
+            @if (showCatalogsMenu)
+            {
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="BscCatalog">
+                            <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" />Bsc
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="ClassificationCatalog">
+                            <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" />Clasificación
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="WeighingCatalog">
+                            <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" /> Poderación
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="ShortFCatalog">
+                            <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" /> Hallazgo corto
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool NavMenuReport = true;
+    private bool showUserMenu = false;
+    private bool showAuditReportMenu = false;
+    private bool showAuditFindingMenu = false;
+    private bool showAuditFollowMenu = false;
+    private bool showCatalogsMenu = false;
+    private bool showPhotoMenu = false;
+    private bool showPrintMenu = false;
+
+
+
+    private string? NavMenuCssClass => NavMenuReport ? "collapse" : null;
+
+    private void ToggleMenuReport()
+    {
+        NavMenuReport = !NavMenuReport;
+    }
+
+    private void ToggleMenu(ref bool menu)
+    {
+        menu = !menu;
+    }
+}
+ *@

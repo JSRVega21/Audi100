@@ -1,0 +1,182 @@
+﻿@page "/Photo"
+@inject NavigationManager NavigationManager
+@inject IService<AuditReport, int> AuditReportService
+@inject IService<AuditFinding, int> AuditFindingService
+@inject IPhotoService<Photo, int> PhotoService
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JSRuntime
+
+@using Audi100.Models
+@using DevExpress.Blazor
+@using Audi100.Services
+
+<h3>Descarga y visualización de archivos del hallazgo</h3>
+
+<div class="card">
+    <fieldset class="border p-4 mt-3">
+        @if (auditFindings != null && auditFindings.Any())
+        {
+            <DxGrid @ref="Grid" Data="@auditFindings" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
+                <Columns>
+                    <DxGridDataColumn Caption="Fechas del hallazgo" FieldName="@nameof(AuditFinding.DateCreate)" />
+                    <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(AuditFinding.AuditFindingId)" />
+                    <DxGridDataColumn Caption="Id Informe" FieldName="@nameof(AuditFinding.AuditReportId)" />
+                    <DxGridDataColumn Caption="Descripción del Informe" FieldName="@nameof(AuditFinding.DataReport)" />
+                    <DxGridDataColumn Caption="Nivel de hallazgo" FieldName="@nameof(AuditFinding.FindLevel)" />
+                </Columns>
+                <ToolbarTemplate>
+                    <DxToolbar>
+                        <DxToolbarItem Text="Ajuste de columnas" Click="Grid_FitWidths" RenderStyle="ButtonRenderStyle.Secondary" />
+                    </DxToolbar>
+                </ToolbarTemplate>
+            </DxGrid>
+        }
+        else
+        {
+            <p>Cargando o no se encontraron hallazgos...</p>
+        }
+    </fieldset>
+
+    <fieldset class="border p-4 mt-3">
+        <EditForm Model="@newPhoto">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <DxComboBox Data="auditFindingIds"
+                        @bind-Value="selectedAuditFindingId"
+                        ValueFieldName="@nameof(Photo.AuditFindingId)"
+                        TextFieldName="@nameof(Photo.AuditFindingId)"
+                        SearchMode="@ListSearchMode.AutoSearch"
+                        SearchFilterCondition="@ListSearchFilterCondition.Contains"
+                        ListRenderMode="ListRenderMode.Virtual"
+                        NullText="Seleccione un hallazgo" />
+        </EditForm>
+
+        <!-- Botón para mostrar fotos -->
+        <DxButton Click="@(async () => await ShowFilesAsync(selectedAuditFindingId.Value))"
+                  CssClass="btn btn-info mb-3" Disabled="@(!selectedAuditFindingId.HasValue || isLoadingPhotos)">
+            @if (isLoadingPhotos)
+            {
+                <div class="spinner"></div> <!-- Mostrar spinner mientras se cargan las fotos -->
+            }
+            else
+            {
+                <text>Mostrar fotos</text>
+            }
+        </DxButton>
+
+        <!-- Botón para descargar PDFs -->
+        <DxButton Click="@(async () => await DownloadFilesAsync(selectedAuditFindingId.Value))"
+                  CssClass="btn btn-success mb-3" Disabled="@(!selectedAuditFindingId.HasValue || isLoadingPdfs)">
+            @if (isLoadingPdfs)
+            {
+                <div class="spinner"></div> <!-- Mostrar spinner mientras se descargan los PDFs -->
+            }
+            else
+            {
+                <text>Descargar pdfs</text>
+            }
+        </DxButton>
+    </fieldset>
+</div>
+
+@if (selectedPhotos != null && selectedPhotos.Any())
+{
+    <div class="mt-3">
+        <h4>Fotos</h4>
+        <div class="photo-container">
+            @foreach (var photo in selectedPhotos)
+            {
+                @if (photo.BytePhone != null)
+                {
+                    <div class="photo-box">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(photo.BytePhone)" alt="Photo" class="photo-img" />
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<AuditFinding> auditFindings = new List<AuditFinding>();
+    private int? selectedAuditFindingId;
+    private Photo newPhoto = new Photo();
+    private List<int> auditFindingIds = new List<int>();
+    private List<Photo> selectedPhotos = new List<Photo>();
+
+    private bool isLoadingPhotos = false; // Estado de carga de fotos
+    private bool isLoadingPdfs = false;   // Estado de carga de PDFs
+
+    IGrid Grid { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReports();
+        await LoadAuditFindingIds();
+    }
+
+    private async Task LoadReports()
+    {
+        auditFindings = (await AuditFindingService.GetListAsync()).ToList();
+        StateHasChanged();
+    }
+
+    private async Task LoadAuditFindingIds()
+    {
+        var allPhotos = await PhotoService.GetListAsync();
+        auditFindingIds = allPhotos.Select(p => p.AuditFindingId).Distinct().ToList();
+    }
+
+    // Método para mostrar fotos
+    private async Task ShowFilesAsync(int auditFindingId)
+    {
+        isLoadingPhotos = true; // Activa el estado de carga para fotos
+        try
+        {
+            selectedPhotos = (await PhotoService.GetAuditId(auditFindingId)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar fotos: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingPhotos = false; // Desactiva el estado de carga
+            StateHasChanged();
+        }
+    }
+
+    // Método para descargar PDFs
+    private async Task DownloadFilesAsync(int auditFindingId)
+    {
+        isLoadingPdfs = true; // Activa el estado de carga para PDFs
+        try
+        {
+            var client = HttpClientFactory.CreateClient("Audi100.Server");
+            var response = await client.GetAsync($"/api/Photo/download-files/{auditFindingId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var zipBytes = await response.Content.ReadAsByteArrayAsync();
+                await JSRuntime.InvokeVoidAsync("downloadFileFromBlob", $"{auditFindingId}_archivos.zip", zipBytes, "application/zip");
+            }
+            else
+            {
+                throw new Exception($"Error al descargar los archivos ZIP: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al descargar los archivos: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingPdfs = false; // Desactiva el estado de carga
+        }
+    }
+
+    void Grid_FitWidths()
+    {
+        Grid.AutoFitColumnWidths();
+    }
+}
