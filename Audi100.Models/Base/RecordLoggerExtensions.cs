@@ -17,15 +17,15 @@ namespace Audi100.Models
             entity.RecordLog.SyncStatus = SyncStatus.New;
             entity.RecordLog.SyncDate = DateTime.Now;
             entity.RecordLog.CreatedDate = DateTime.Now;
-            entity.RecordLog.CreatedBy = "admin";
+            entity.RecordLog.CreatedBy = UserContext.UserNameContext;
             entity.RecordLog.UpdatedDate = entity.RecordLog.CreatedDate;
-            entity.RecordLog.UpdatedBy = "admin";
+            entity.RecordLog.UpdatedBy = UserContext.UserNameContext;
         }
 
-        public static void Updated(this IRecordLogger entity)
-        {
+        public static void Updated(this IRecordLogger entity) 
+        { 
             entity.RecordLog.UpdatedDate = DateTime.Now;
-            entity.RecordLog.UpdatedBy = "admin";
+            entity.RecordLog.UpdatedBy = UserContext.UserNameContext;
             entity.RecordLog.SyncStatus = SyncStatus.Updated;
         }
 

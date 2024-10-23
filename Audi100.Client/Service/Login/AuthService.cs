@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using Audi100.Models;
+using Microsoft.JSInterop;
 using System.Net.Http.Json;
 
 public class AuthService
@@ -25,6 +26,10 @@ public class AuthService
             {
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "token", result.Token);
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "role", result.user.UserRoleId.ToString());
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "username", result.user.UserName.ToString());
+
+                UserContext.UserNameContext = result.user.UserName;
+
                 return true;
             }
         }
@@ -36,6 +41,7 @@ public class AuthService
     {
         await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "token");
         await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "role");
+        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "username");
     }
 
 
@@ -47,6 +53,10 @@ public class AuthService
     public async Task<string?> GetRole()
     {
         return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "role");
+    }
+    public async Task<string?> GetUserName()
+    {
+        return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "username");
     }
 
     public class LoginResponse

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Audi100.Server.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PhotoController : ControllerBase

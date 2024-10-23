@@ -32,6 +32,8 @@ namespace Audi100.Server.Controllers
             if (user == null)
                 return Unauthorized("Usuario, correo o teléfono incorrecto, o la contraseña es inválida.");
 
+            UserContext.UserNameContext = user.UserName ?? "Usuario";
+
             var token = GenerateJwtToken(user);
 
             return Ok(new
