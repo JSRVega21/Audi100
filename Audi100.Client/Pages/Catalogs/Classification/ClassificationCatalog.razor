@@ -49,7 +49,7 @@
                             <Columns>
                                 <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(Classification.ClassificationId)" Width="95px" />
                                 <DxGridDataColumn Caption="Descripción" FieldName="@nameof(Classification.Description)" Width="350px" />
-                                <DxGridCommandColumn Width="150px">
+                                <DxGridCommandColumn Width="125px">
                                     <HeaderTemplate>
                                         <span>Acciones</span>
                                     </HeaderTemplate>
@@ -57,11 +57,16 @@
                                         @if (commandContext.DataItem is Classification Classification)
                                         {
                                             <div class="d-flex justify-content-start">
-                                                <DxButton Click="@(() => EditReport(Classification))" CssClass="btn btn-warning ml-2">
-                                                    Editar
+                                                <DxButton Click="@(() => EditReport(Classification))"
+                                                          RenderStyle="ButtonRenderStyle.Warning"
+                                                          CssClass="custom-button">
+                                                    <img src="icons/EditFrom.svg" class="custom-icon" />
                                                 </DxButton>
-                                                <DxButton Click="@(() => ConfirmDelete(Classification.ClassificationId))" CssClass="btn btn-danger ml-2">
-                                                    Eliminar
+                                                &nbsp;
+                                                <DxButton Click="@(() => ConfirmDelete(Classification.ClassificationId))"
+                                                          RenderStyle="ButtonRenderStyle.Danger"
+                                                          CssClass="custom-button">
+                                                    <img src="icons/DeleteFrom.svg" class="custom-icon" />
                                                 </DxButton>
                                             </div>
                                             @if (ClassificationIdToDelete == Classification.ClassificationId && showConfirmDelete)

@@ -30,8 +30,30 @@ namespace Audi100.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuditFindingId"));
 
+                    b.Property<string>("AuditFindingCostCenter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuditFindingDepto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuditFindingSeccion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("AuditReportId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("AuditStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuditStatusText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuditorFinding")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AuthorizedForReport")
                         .HasColumnType("nvarchar(max)");
@@ -60,6 +82,14 @@ namespace Audi100.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EffectAudit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeFinding")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeFinding2")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FindLevel")
@@ -143,11 +173,18 @@ namespace Audi100.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DateE")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateGra")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateI")
                         .IsRequired()
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Direct")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -160,6 +197,15 @@ namespace Audi100.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmployeeId3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Graduate1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Graduate2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Graduate3")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("Line")
@@ -175,6 +221,9 @@ namespace Audi100.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OtherEmployee4")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Others")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Part1")
@@ -195,6 +244,22 @@ namespace Audi100.Server.Migrations
                     b.Property<string>("ReportCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SubSeccion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TextDirect")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TextGraduate1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TextGraduate2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TextGraduate3")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("AuditPrintId");
 
                     b.ToTable("AuditPrint");
@@ -209,6 +274,12 @@ namespace Audi100.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuditReportId"));
 
                     b.Property<string>("AuditObservations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AuditStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuditStatusText")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AuditorId1")
@@ -340,23 +411,42 @@ namespace Audi100.Server.Migrations
                     b.Property<int?>("AuditReportId")
                         .HasColumnType("int");
 
-                    b.Property<string>("AuditTrailDepto")
+                    b.Property<int?>("AuditStatus")
                         .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuditStatusText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuditTrailCostCenter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuditTrailDepto")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AuditTrailFollow")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal?>("AuditTrailNegativeRisk")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("AuditTrailNegativeWeighting")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("AuditTrailPositiveRisk")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("AuditTrailPositiveWeighting")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("AuditTrailSeccion")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AuditTrailStatus")
-                        .IsRequired()
-                        .HasColumnType("int");
-
                     b.Property<string>("AuditTrailWeighting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuditorTrail")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DateCreate")
@@ -367,6 +457,12 @@ namespace Audi100.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeTrail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeTrail2")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FindLevel")
@@ -395,6 +491,18 @@ namespace Audi100.Server.Migrations
 
                     b.Property<string>("ReportCode")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TotalNegativeRisk")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalNegativeWeighting")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalPositiveRisk")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalPositiveWeighting")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("WeightingClassification")
                         .HasColumnType("nvarchar(max)");

@@ -47,44 +47,68 @@
                 <DxMaskedInput @bind-Value="@AuditTrail.DisplayName" NullText="Id de hallazgo"  />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Id de informe:">
+            <DxFormLayoutItem Caption="Id de informe:" ColSpanMd="4">
                 <DxMaskedInput @bind-Value="@AuditTrail.AuditReportId" NullText="Id de informe" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Nivel de Hallazgo">
+            <DxFormLayoutItem Caption="Nivel de Hallazgo" ColSpanMd="4">
                 <DxTextBox @bind-Text="@AuditTrail.FindLevel" NullText="Nivel de Hallazgo" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Código del informe">
+            <DxFormLayoutItem Caption="Código del informe" ColSpanMd="4">
                 <DxMaskedInput @bind-Value="@AuditTrail.ReportCode" NullText="Código del informe" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Clasificación de ponderación:">
+            <DxFormLayoutItem Caption="Clasificación de ponderación:" ColSpanMd="4">
                 <DxTextBox @bind-Text="@AuditTrail.WeightingClassification" NullText="Clasificación de ponderación" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Id de hallazgo">
+            <DxFormLayoutItem Caption="Id de hallazgo" ColSpanMd="4">
                 <DxMaskedInput @bind-Value="@AuditTrail.AuditFindingId" NullText="Id de hallazgo" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Hallazgo corto:">
+            <DxFormLayoutItem Caption="Hallazgo corto:" ColSpanMd="4">
                 <DxTextBox @bind-Text="@AuditTrail.FindShortName" NullText="Hallazgo corto" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Número de hallazgos">
+            <DxFormLayoutItem Caption="Número de hallazgos" ColSpanMd="12">
                 <DxMaskedInput @bind-Value="@AuditTrail.NumberOfFindings" NullText="Número de hallazgos" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Centro de costo:">
+            <DxFormLayoutItem Caption="Centro de costo del informe:" ColSpanMd="6">
                 <DxTextBox @bind-Text="@AuditTrail.nomDepto" NullText="Centro de costo" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="División:">
+            <DxFormLayoutItem Caption="División del informe:" ColSpanMd="6">
                 <DxTextBox @bind-Text="@AuditTrail.nomDivision" NullText="División" ReadOnly="true" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Sección:">
+            <DxFormLayoutItem Caption="Sección del informe:" ColSpanMd="6">
                 <DxTextBox @bind-Text="@AuditTrail.nomSeccion" NullText="Sección" ReadOnly="true" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Caption="Centro de costo del hallazgo:" ColSpanMd="6">
+                <DxTextBox @bind-Text="@AuditTrail.AuditTrailCostCenter" NullText="Centro de costo" ReadOnly="true" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Caption="División del hallazgo:" ColSpanMd="6">
+                <DxTextBox @bind-Text="@AuditTrail.AuditTrailDepto" NullText="División" ReadOnly="true" />
+            </DxFormLayoutItem>
+             
+            <DxFormLayoutItem Caption="Sección del hallazgo:" ColSpanMd="6">
+                <DxTextBox @bind-Text="@AuditTrail.AuditTrailSeccion" NullText="Sección" ReadOnly="true" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Caption="Auditor:" ColSpanMd="6">
+                <DxTextBox @bind-Text="@AuditTrail.AuditorTrail" NullText="Auditor" ReadOnly="true" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Caption="Responsable:" ColSpanMd="6">
+                <DxTextBox @bind-Text="@AuditTrail.EmployeeTrail" NullText="Responsable" ReadOnly="true" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Caption="Responsable:" ColSpanMd="6">
+                <DxTextBox @bind-Text="@AuditTrail.EmployeeTrail2" NullText="Responsable" ReadOnly="true" />
             </DxFormLayoutItem>
 
         </DxFormLayoutGroup>
@@ -97,7 +121,8 @@
                 <DxFormLayoutGroup Caption="Detalle del hallazgo escrito" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
 
                     <DxFormLayoutItem Caption="Hallazgo Detalle" ColSpanMd="12" >
-                        <DxMemo @bind-Text="@AuditTrail.DetailFindingAudit" NullText="Hallazgo Detalle" CssClass="h-100" />
+                        <DxMemo @bind-Text="@AuditTrail.DetailFindingAudit" NullText="Hallazgo Detalle" 
+                        ReadOnly="true" CssClass="h-100" Rows="20" />
                     </DxFormLayoutItem>
 
                 </DxFormLayoutGroup>
@@ -110,20 +135,67 @@
                 <DxFormLayoutGroup Caption="Detalle del hallazgo Q" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
 
                     <DxFormLayoutItem Caption="Faltante (-)" ColSpanMd="6">
-                        <DxMaskedInput @bind-Value="@AuditTrail.NegativeWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+                        <DxMaskedInput @bind-Value="@AuditTrail.NegativeWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" ReadOnly="true" />
                     </DxFormLayoutItem>
 
                     <DxFormLayoutItem Caption="Riesgo (-)" ColSpanMd="6">
-                        <DxMaskedInput @bind-Value="@AuditTrail.NegativeRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+                        <DxMaskedInput @bind-Value="@AuditTrail.NegativeRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" ReadOnly="true" />
                     </DxFormLayoutItem>
 
                     <DxFormLayoutItem Caption="Sobrante (+)" ColSpanMd="6">
-                        <DxMaskedInput @bind-Value="@AuditTrail.PositiveWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+                        <DxMaskedInput @bind-Value="@AuditTrail.PositiveWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" ReadOnly="true" />
                     </DxFormLayoutItem>
 
                     <DxFormLayoutItem Caption="Riesgo (+)" ColSpanMd="6">
-                        <DxMaskedInput @bind-Value="@AuditTrail.PositiveRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+                        <DxMaskedInput @bind-Value="@AuditTrail.PositiveRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" ReadOnly="true" />
                     </DxFormLayoutItem>
+                </DxFormLayoutGroup>
+            </DxFormLayout>
+
+            <DxFormLayout>
+                <DxFormLayoutGroup Caption="Detalle del Seguimiento Q" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+
+                    <DxFormLayoutItem Caption="Faltante Corregido (-)" ColSpanMd="6">
+                        <DxMaskedInput @bind-Value="@AuditTrail.AuditTrailNegativeWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00"/>
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Riesgo Corregido (-)" ColSpanMd="6">
+                        <DxMaskedInput @bind-Value="@AuditTrail.AuditTrailNegativeRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Sobrante Corregido (+)" ColSpanMd="6">
+                        <DxMaskedInput @bind-Value="@AuditTrail.AuditTrailPositiveWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Riesgo Corregido (+)" ColSpanMd="6">
+                        <DxMaskedInput @bind-Value="@AuditTrail.AuditTrailPositiveRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
+                    </DxFormLayoutItem>
+                </DxFormLayoutGroup>
+            </DxFormLayout>
+
+            <DxFormLayout>
+                <DxFormLayoutGroup Caption="Totales Q" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+
+                    <DxFormLayoutItem Caption="Faltante Total(-)" ColSpanMd="6">
+                        <DxMaskedInput @bind-Value="@AuditTrail.TotalNegativeWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" ReadOnly="true" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Riesgo Total(-)" ColSpanMd="6">
+                        <DxMaskedInput @bind-Value="@AuditTrail.TotalNegativeRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" ReadOnly="true" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Sobrante Total(+)" ColSpanMd="6">
+                        <DxMaskedInput @bind-Value="@AuditTrail.TotalPositiveWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" ReadOnly="true" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Riesgo (+)" ColSpanMd="6">
+                        <DxMaskedInput @bind-Value="@AuditTrail.TotalPositiveRisk" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" ReadOnly="true" />
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="">
+                        <DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Calcular" @onclick="CalculateTotals" />
+                    </DxFormLayoutItem>
+
                 </DxFormLayoutGroup>
             </DxFormLayout>
         </div>
@@ -137,28 +209,12 @@
                 <ValidationMessage For="@(() => AuditTrail.DateCreate)" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Línea" ColSpanMd="4">
-                <DxMaskedInput @bind-Value="@AuditTrail.Line" Mask="###,##0" NullText="0,000" />
+            <DxFormLayoutItem Caption="Número de seguimiento" ColSpanMd="4">
+                <DxMaskedInput @bind-Value="@AuditTrail.Line" Mask="##0"/>
             </DxFormLayoutItem>
 
             <DxFormLayoutItem Caption="Hallazgo Clasificación:" ColSpanMd="4">
                 <DxTextBox @bind-Text="@AuditTrail.AuditTrailWeighting" NullText="Sobrante de mercadería" />
-            </DxFormLayoutItem>
-
-            <DxFormLayoutItem Caption="Hallazgo Division" ColSpanMd="6">
-                <DxComboBox Data="Division" @bind-Value="AuditTrail.AuditTrailDepto" ValueFieldName="@nameof(CostDivision.NomDivision)"
-                            TextFieldName="@nameof(CostDivision.NomDivision)" SearchMode="@ListSearchMode.AutoSearch"
-                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
-                            NullText="Seleccione una Division " />
-                <ValidationMessage For="@(() => AuditTrail.AuditTrailDepto)" />
-            </DxFormLayoutItem>
-
-            <DxFormLayoutItem Caption="Hallazgo Sección" ColSpanMd="6">
-                <DxComboBox Data="Seccions" @bind-Value="AuditTrail.AuditTrailSeccion" ValueFieldName="@nameof(CostSeccion.NomSeccion)"
-                            TextFieldName="@nameof(CostSeccion.NomSeccion)" SearchMode="@ListSearchMode.AutoSearch"
-                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
-                            NullText="Seleccione una Sección" />
-                <ValidationMessage For="@(() => AuditTrail.AuditTrailSeccion)" />
             </DxFormLayoutItem>
 
             <DxFormLayoutItem Caption="Seguimiento del hallazgo" ColSpanMd="7">
@@ -167,16 +223,25 @@
             </DxFormLayoutItem>
 
             <DxFormLayoutItem Caption="Estatus del seguimiento" ColSpanMd="5">
-                <DxComboBox Data="@Status" @bind-Value="AuditTrail.AuditTrailStatus" NullText="Seleccionar"
-                            ValueFieldName="Key" TextFieldName="Value"/>
-                <ValidationMessage For="@(() => AuditTrail.AuditTrailStatus)" />
+                <DxComboBox Data="@Status"
+                            @bind-Value="AuditTrail.AuditStatus"
+                            ValueFieldName="Key"
+                            TextFieldName="Value"
+                            NullText="Seleccionar"
+                            @bind-Value:after="@(async () => SetStatusText(AuditTrail.AuditStatus))" />
+                <ValidationMessage For="@(() => AuditTrail.AuditStatus)" />
             </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="false">
+                <DxMaskedInput @bind-Value="@AuditTrail.AuditStatusText" />
+            </DxFormLayoutItem>
+
         </DxFormLayoutGroup>
     </DxFormLayout>
 
 
     <DxFormLayout>
-        <DxFormLayoutGroup>
+        <DxFormLayoutGroup Caption="Botones">
             <DxFormLayoutItem>
                 <button type="submit" class="dx-button">
                     @(AuditTrailId.HasValue ? "Actualizar" : "Crear")
@@ -193,26 +258,40 @@
     private List<AuditComplete> auditComplete { get; set; } = new List<AuditComplete>();
     private int? selectedAuditFindingId { get; set; }
 
+    private List<CostCenterUnit> CostCenter { get; set; } = new List<CostCenterUnit>();
     private List<CostSeccion> Seccions { get; set; } = new List<CostSeccion>();
     private List<CostDivision> Division { get; set; } = new List<CostDivision>();
 
     private Dictionary<int, string> Status = new Dictionary<int, string>
     {
-        {0, "Finalizada"},
-        {1, "En Seguimiento"},
-        {2, "No terminada"}
+        {0, "Pendiente"},
+        {1, "En seguimiento"},
+        {2, "Finalizada"},
+        {3, "No terminada"}
     };
+
+    public int? AuditStatus { get; set; }
+    public string? AuditStatusText { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        auditComplete = (await GetAuditComplete()).ToList();
-        Seccions = (await GetSeccion()).ToList();
-        Division = (await GetDivison()).ToList();
+        auditComplete = (await GetAuditComplete())
+              .OrderByDescending(r => r.AuditReportId)
+        .ToList();
 
         if (AuditTrailId.HasValue)
         {
             AuditTrail = await AuditTrailService.GetByKeyAsync(AuditTrailId.Value) ?? new AuditTrail();
             selectedAuditFindingId = AuditTrail.AuditFindingId; 
+        }
+        else
+        {
+            AuditTrail = new AuditTrail
+                {
+                    Line = 1,
+                    AuditStatus = 0,
+                    AuditStatusText = Status[0]
+                };
         }
     }
 
@@ -242,21 +321,37 @@
         return await Http.GetFromJsonAsync<IEnumerable<AuditComplete>>(query);
     }
 
-    public async Task<IEnumerable<CostSeccion>> GetSeccion()
+    private void SetStatusText(int? selected)
     {
-        var query = $"api/SqlData/GetSeccion";
-        return await Http.GetFromJsonAsync<IEnumerable<CostSeccion>>(query);
-    }
-    public async Task<IEnumerable<CostDivision>> GetDivison()
-    {
-        var query = $"api/SqlData/GetDivision";
-        return await Http.GetFromJsonAsync<IEnumerable<CostDivision>>(query);
+        AuditTrail.AuditStatus = selected ?? 0;
+
+        if (Status.TryGetValue(AuditTrail.AuditStatus.Value, out var text))
+        {
+            AuditTrail.AuditStatusText = text;
+        }
+        else
+        {
+            AuditTrail.AuditStatusText = string.Empty;
+        }
+
+        StateHasChanged();
     }
 
     private void GoBack() 
     {
         NavigationManager.NavigateTo("/AuditTrailView", forceLoad: false);
     }
+
+    private void CalculateTotals()
+    {
+        AuditTrail.TotalPositiveWeighting = (AuditTrail.PositiveWeighting ?? 0) - (AuditTrail.AuditTrailPositiveWeighting ?? 0);
+        AuditTrail.TotalNegativeWeighting = (AuditTrail.NegativeWeighting ?? 0) - (AuditTrail.AuditTrailNegativeWeighting ?? 0);
+        AuditTrail.TotalPositiveRisk = (AuditTrail.PositiveRisk ?? 0) - (AuditTrail.AuditTrailPositiveRisk ?? 0);
+        AuditTrail.TotalNegativeRisk = (AuditTrail.NegativeRisk ?? 0) - (AuditTrail.AuditTrailNegativeRisk ?? 0);
+
+        StateHasChanged();
+    }
+
 
     private async Task LoadSelectedAudit()
     {
@@ -283,6 +378,12 @@
                 AuditTrail.NegativeWeighting = selectedAudit.NegativeWeighting; 
                 AuditTrail.PositiveRisk = selectedAudit.PositiveRisk;
                 AuditTrail.NegativeRisk = selectedAudit.NegativeRisk;
+                AuditTrail.AuditTrailCostCenter = selectedAudit.AuditFindingCostCenter;
+                AuditTrail.AuditTrailDepto = selectedAudit.AuditFindingDepto;
+                AuditTrail.AuditTrailSeccion = selectedAudit.AuditFindingSeccion;
+                AuditTrail.AuditorTrail = selectedAudit.AuditorFinding;
+                AuditTrail.EmployeeTrail = selectedAudit.EmployeeFinding;
+                AuditTrail.EmployeeTrail2 = selectedAudit.EmployeeFinding2;
             }
 
             StateHasChanged();

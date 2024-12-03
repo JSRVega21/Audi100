@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Audi100.Server.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")] 
     [ApiController]
     public class UserController : ControllerBase

@@ -44,31 +44,16 @@
                 <DxMaskedInput @bind-Value="@AuditPrint.DisplayName" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Acta hora inicial:" ColSpanMd="4">
-                <DxDateEdit @bind-Date="@AuditPrint.DateI"
-                            NullText="DD/MM/YYYY HH:mm:ss"
-                            DisplayFormat="dd dddd MMMM yyyy HH:mm:ss"
-                            TimeSectionVisible="true"
-                            ScrollPickerFormat="dddd MMMM yyyy HH:mm"
-                            CssClass="cw-320"
-                            InputId="deScrollPicker"/>
+            <DxFormLayoutItem Caption="Acta hora inicial:" ColSpanMd="6">
+                <DxDateEdit @bind-Date="@AuditPrint.DateI" NullText="DD/MM/YYYY HH:mm:ss" DisplayFormat="dd dddd MMMM yyyy HH:mm:ss" TimeSectionVisible="true"
+                            ScrollPickerFormat="dddd MMMM yyyy HH:mm" CssClass="cw-320" InputId="deScrollPicker"/>
                 <ValidationMessage For="@(() => AuditPrint.DateI)" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Acta hora final:" ColSpanMd="4">
-                <DxDateEdit @bind-Date="@AuditPrint.DateE"
-                            NullText="DD/MM/YYYY HH:mm:ss"
-                            DisplayFormat="dd dddd MMMM yyyy HH:mm:ss"
-                            TimeSectionVisible="true"
-                            ScrollPickerFormat="dddd MMMM yyyy HH:mm"
-                            CssClass="cw-320"
-                            InputId="deScrollPicker" />
+            <DxFormLayoutItem Caption="Acta hora final:" ColSpanMd="6">
+                <DxDateEdit @bind-Date="@AuditPrint.DateE" NullText="DD/MM/YYYY HH:mm:ss" DisplayFormat="dd dddd MMMM yyyy HH:mm:ss"
+                            TimeSectionVisible="true" ScrollPickerFormat="dddd MMMM yyyy HH:mm" CssClass="cw-320" InputId="deScrollPicker" />
             </DxFormLayoutItem>
-
-            <DxFormLayoutItem Caption="A partir de la linea" ColSpanMd="4">
-                <DxMaskedInput @bind-Value="@AuditPrint.Line"  NullText="###" />
-            </DxFormLayoutItem>
-
         </DxFormLayoutGroup>
     </DxFormLayout>
 
@@ -147,26 +132,25 @@
                             NullText="Seleccione" />
             </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Sección de costo" ColSpanMd="12">
-                <DxComboBox Data="Seccions" @bind-Value="AuditPrint.CostSeccionPrint" ValueFieldName="@nameof(CostSeccion.NomSeccion)"
-                            TextFieldName="@nameof(CostSeccion.NomSeccion)" SearchMode="@ListSearchMode.AutoSearch"
+            <DxFormLayoutItem Caption="Sección de costo" ColSpanMd="6">
+                <DxComboBox Data="CostSeccion" @bind-Value="AuditPrint.CostSeccionPrint" ValueFieldName="@nameof(CostCenterSeccion.NomCostCenterSeccion)"
+                            TextFieldName="@nameof(CostCenterSeccion.NomCostCenterSeccion)" SearchMode="@ListSearchMode.AutoSearch"
                             SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
                             NullText="Seleccione una sección de costo" />
                 <ValidationMessage For="@(() => AuditPrint.CostSeccionPrint)" />
             </DxFormLayoutItem>
 
+            <DxFormLayoutItem Caption="Sub Sección" ColSpanMd="6">
+                <DxMaskedInput @bind-Value="@AuditPrint.SubSeccion" NullText="Sobrante de mercaderia" />
+                <ValidationMessage For="@(() => AuditPrint.SubSeccion)" />
+            </DxFormLayoutItem>
+            
         </DxFormLayoutGroup>
     </DxFormLayout>
 
     <!-- Descripción del acta -->
     <DxFormLayout>
-        <DxFormLayoutGroup Caption="Descripción del anta" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
-
-@*             <DxFormLayoutItem Caption="Personal de administración de la sucursal o área auditada y auditoría" ColSpanMd="12">
-            </DxFormLayoutItem>
-            <DxFormLayoutItem ColSpanMd="12">
-                <DxMemo @bind-Text="@AuditPrint.PersonalPart" />
-            </DxFormLayoutItem> *@
+        <DxFormLayoutGroup Caption="Descripción del acta" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
 
             <DxFormLayoutItem Caption="PRIMERO: Tiempo y alcance de la auditoría" ColSpanMd="12">
             </DxFormLayoutItem>
@@ -186,17 +170,75 @@
                 <DxMemo @bind-Text="@AuditPrint.Part3" />
             </DxFormLayoutItem>
 
-@*             <DxFormLayoutItem Caption="CUARTO:" ColSpanMd="12">
+            <DxFormLayoutItem Caption="Otros:" ColSpanMd="12">
             </DxFormLayoutItem>
             <DxFormLayoutItem ColSpanMd="12">
-                <DxMemo @bind-Text="@AuditPrint.Part4" />
-            </DxFormLayoutItem> *@
+                <DxMemo @bind-Text="@AuditPrint.Others" />
+            </DxFormLayoutItem> 
 
         </DxFormLayoutGroup>
     </DxFormLayout>
 
+
+    <!-- Formato del acta simple -->
     <DxFormLayout>
-        <DxFormLayoutGroup>
+        <DxFormLayoutGroup Caption="Parametros para generar la otra acta" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+
+            <DxFormLayoutItem Caption="Nombre Gerente" ColSpanMd="4">
+                <DxComboBox Data="Employees" @bind-Value="AuditPrint.Graduate1" ValueFieldName="@nameof(Employee.Name_Employee)" TextFieldName="@nameof(Employee.Name_Employee)" 
+                            SearchMode="@ListSearchMode.AutoSearch" SearchFilterCondition="@ListSearchFilterCondition.Contains"
+                            @bind-Value:after="@(async () => SetCod_Employee(AuditPrint.Graduate1))"
+                            ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione" />            
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="true">
+                <DxMaskedInput @bind-Value="@AuditPrint.TextGraduate1" />
+            </DxFormLayoutItem>            
+            
+            <DxFormLayoutItem Caption="Nombre de gerente" ColSpanMd="4">
+                <DxComboBox Data="Employees" @bind-Value="AuditPrint.Graduate2" ValueFieldName="@nameof(Employee.Name_Employee)" TextFieldName="@nameof(Employee.Name_Employee)" 
+                            SearchMode="@ListSearchMode.AutoSearch" SearchFilterCondition="@ListSearchFilterCondition.Contains"
+                            @bind-Value:after="@(async () => SetCod_Employee2(AuditPrint.Graduate2))"
+                            ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione" />            
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="true">
+                <DxMaskedInput @bind-Value="@AuditPrint.TextGraduate2" />
+            </DxFormLayoutItem>            
+            
+            <DxFormLayoutItem Caption="Nombre de gerente" ColSpanMd="4">
+                <DxComboBox Data="Employees" @bind-Value="AuditPrint.Graduate3" ValueFieldName="@nameof(Employee.Name_Employee)" TextFieldName="@nameof(Employee.Name_Employee)" 
+                            SearchMode="@ListSearchMode.AutoSearch" SearchFilterCondition="@ListSearchFilterCondition.Contains"
+                            @bind-Value:after="@(async () => SetCod_Employee3(AuditPrint.Graduate3))"
+                            ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione" />            
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="true">
+                <DxMaskedInput @bind-Value="@AuditPrint.TextGraduate3" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Caption="Auditoría dirigida a:">
+                <DxMemo @bind-Text="@AuditPrint.Direct" />
+            </DxFormLayoutItem>
+            
+            <DxFormLayoutItem Caption="Título para la caratula:"> 
+                <DxMemo @bind-Text="@AuditPrint.TextDirect" />
+            </DxFormLayoutItem>         
+            
+            <DxFormLayoutItem Caption="Fecha de caratula:" ColSpanLg="12"> 
+                <DxDateEdit @bind-Date="@AuditPrint.DateGra" NullText="DD/MM/YYYY HH:mm:ss" DisplayFormat="dd dddd MMMM yyyy HH:mm:ss"
+                            TimeSectionVisible="true" ScrollPickerFormat="dddd MMMM yyyy HH:mm" CssClass="cw-320" InputId="deScrollPicker" />
+            </DxFormLayoutItem>
+
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+
+    <DxFormLayout>
+        <DxFormLayoutGroup Caption="Botones">
             <DxFormLayoutItem>
                 <button type="submit" class="dx-button">
                     @(AuditPrintId.HasValue ? "Actualizar" : "Crear")
@@ -205,7 +247,6 @@
             </DxFormLayoutItem>
         </DxFormLayoutGroup>
     </DxFormLayout>
-
 
 </EditForm>
 
@@ -222,61 +263,47 @@
     private AuditFinding AuditFinding = new AuditFinding();
 
     private AuditPrint AuditPrint = new AuditPrint
-        {
-
-            // PersonalPart = "En las instalaciones de , siendo las  del , con la presencia del Administrador: , el Auditor a cargo: , " +
-            // "y otros colaboradores, se realizó la auditoría correspondiente.",
-
-            Part1 = "Del 00 al 00 de [mes] de [año] se realizó auditoría [tipo] de [que lineas], en la [bodega] [], " +
-            " para verificar que las existencias sean razonables y cumplimiento en la aplicación de procedimientos " +
-            " y políticas institucionales en tiempo y forma.",
-
-            Part2 = "Derivado de la auditoría realizada por el equipo de Auditoría " +
-            " interna, se determinó que existen faltantes de mercadería por la cantidad de [], y sobrantes de mercaderías por la cantidad de []; " +
-            " se deja constancia y detalles en informe de las deficiencias encontradas y requerimientos de Auditoría interna para las correcciones y sanciones que correspondan.",
-
-            Part3 = "La administración de la sucursal a través del administrador es responsable de cumplir con los controles, " +
-            " procedimientos y políticas institucionales; debe ejecutar las acciones correctivas a las deficiencias encontradas y prevenir que no ocurran a partir de esta auditoría.",
-
-            // Part4 = "CUARTO: Siendo las horas, del día , no habiendo más que hacer constar, se da por concluída la reunión de Resultados de la Auditoría, enterados firmamos "
-        };
+        {  };
 
 
     private List<AuditReport> auditReport { get; set; } = new List<AuditReport>();
     private List<Employee> Employees { get; set; } = new List<Employee>();
     private List<Employee> Auditors { get; set; } = new List<Employee>();
-    private List<CostSeccion> Seccions { get; set; } = new List<CostSeccion>();
+    private List<CostCenterSeccion> CostSeccion { get; set; } = new List<CostCenterSeccion>();
 
     #endregion
-
-    // #region PersonalPart
-    
-    // private void UpdatePersonalPart()
-    // {
-    //     if (!string.IsNullOrEmpty(AuditPrint.CostSeccionPrint)
-    //         && AuditPrint.DateI != null
-    //         && !string.IsNullOrEmpty(AuditPrint.EmployeeId1) 
-    //         && !string.IsNullOrEmpty(AuditPrint.AuditorId1)) 
-    //     {
-    //         AuditPrint.PersonalPart = $"En las instalaciones de {AuditPrint.CostSeccionPrint}, siendo las {AuditPrint.DateI:HH:mm} del {AuditPrint.DateI:dd/MM/yyyy}, " +
-    //                                   $"con la presencia del Administrador: {AuditPrint.EmployeeId1}, el Auditor a cargo: {AuditPrint.AuditorId1}, " +
-    //                                   $"y otros colaboradores, se realizó la auditoría correspondiente.";
-    //         StateHasChanged(); 
-    //     }
-    // }
-    // #endregion
 
     #region OnInitialized
     protected override async Task OnInitializedAsync()
     {
-        auditReport = (await AuditReportService.GetListAsync()).ToList();
-        Auditors = (await GetAuditor()).ToList();
+        auditReport = (await AuditReportService.GetListAsync())
+            .OrderByDescending(r => r.AuditReportId)
+            .ToList();
+        
+            Auditors = (await GetAuditor()).ToList();
         Employees = (await GetEmployee()).ToList();
-        Seccions = (await GetSeccion()).ToList();
+        CostSeccion = (await GetCostCenterSeccion()).ToList();
 
         if (AuditPrintId.HasValue)
         {
             AuditPrint = await AuditPrintService.GetByKeyAsync(AuditPrintId.Value) ?? new AuditPrint();
+        }
+        else
+        {
+            AuditPrint = new AuditPrint
+                {
+                    Line = 1,
+                    Part1 = "Del 00 al 00 de [mes] de [año] se realizó auditoría [tipo] de [que lineas], en la [bodega] [], " +
+                    " para verificar que las existencias sean razonables y cumplimiento en la aplicación de procedimientos " +
+                    " y políticas institucionales en tiempo y forma.",
+
+                    Part2 = "Derivado de la auditoría realizada por el equipo de Auditoría " +
+                    " interna, se determinó que existen faltantes de mercadería por la cantidad de [], y sobrantes de mercaderías por la cantidad de []; " +
+                    " se deja constancia y detalles en informe de las deficiencias encontradas y requerimientos de Auditoría interna para las correcciones y sanciones que correspondan.",
+
+                    Part3 = "La administración de la sucursal a través del administrador es responsable de cumplir con los controles, " +
+                    " procedimientos y políticas institucionales; debe ejecutar las acciones correctivas a las deficiencias encontradas y prevenir que no ocurran a partir de esta auditoría."
+                };
         }
     }
 
@@ -309,10 +336,10 @@
         return await Http.GetFromJsonAsync<IEnumerable<Employee>>(query);
     }
 
-    public async Task<IEnumerable<CostSeccion>> GetSeccion()
+    public async Task<IEnumerable<CostCenterSeccion>> GetCostCenterSeccion()
     {
-        var query = $"api/SqlData/GetSeccion";
-        return await Http.GetFromJsonAsync<IEnumerable<CostSeccion>>(query);
+        var query = $"api/SqlData/GetCostCenterSeccion";
+        return await Http.GetFromJsonAsync<IEnumerable<CostCenterSeccion>>(query);
     }
 
     public async Task<IEnumerable<Employee>> GetEmployee()
@@ -337,6 +364,48 @@
         {
             AuditPrint.ReportCode = selectedObj.ReportCode;
             AuditPrint.DisplayName = selectedObj.DisplayName;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetCod_Employee(string? selected)
+    {
+        AuditPrint.Graduate1 = selected;
+
+        var selectedObj = Employees.FirstOrDefault(a => a.Name_Employee == selected);
+
+        if (selectedObj != null)
+        {
+            AuditPrint.TextGraduate1 = selectedObj.Name_Position;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetCod_Employee2(string? selected)
+    {
+        AuditPrint.Graduate2 = selected;
+
+        var selectedObj = Employees.FirstOrDefault(a => a.Name_Employee == selected);
+
+        if (selectedObj != null)
+        {
+            AuditPrint.TextGraduate2 = selectedObj.Name_Position;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetCod_Employee3(string? selected)
+    {
+        AuditPrint.Graduate3 = selected;
+
+        var selectedObj = Employees.FirstOrDefault(a => a.Name_Employee == selected);
+
+        if (selectedObj != null)
+        {
+            AuditPrint.TextGraduate3 = selectedObj.Name_Position;
         }
 
         StateHasChanged();

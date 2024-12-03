@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +14,9 @@ namespace Audi100.Models
         public string? nomDepto { get; set; }
         public string? nomDivision { get; set; }
         public string? nomSeccion { get; set; }
+        public string? AuditFindingCostCenter { get; set; }
+        public string? AuditFindingDepto { get; set; }
+        public string? AuditFindingSeccion { get; set; }
         public decimal? NumberOfFindings { get; set; }
         public string? DetailFindingAudit { get; set; }
         public string? FindLevel { get; set; }
@@ -23,6 +26,9 @@ namespace Audi100.Models
         public decimal? NegativeWeighting { get; set; }
         public decimal? PositiveRisk { get; set; }
         public decimal? NegativeRisk { get; set; }
+        public string? AuditorFinding { get; set; }
+        public string? EmployeeFinding { get; set; }
+        public string? EmployeeFinding2 { get; set; }
 
         public string DisplayName => $"Código del Informe: {ReportCode},  Centro de costo: {nomDepto}, {nomDivision}, {nomSeccion} " +
             $" Número de hallazgo del Informe: {NumberOfFindings},";

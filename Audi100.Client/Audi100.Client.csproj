@@ -11,16 +11,21 @@
     <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
     <PackageReference Include="Blazorise.Bootstrap" Version="1.6.1" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.6.1" />
-    <PackageReference Include="DevExpress.Blazor" Version="24.1.6" />
-    <PackageReference Include="DevExpress.Blazor.Dashboard" Version="24.1.6" />
-    <PackageReference Include="DevExpress.Blazor.es" Version="24.1.6" />
-    <PackageReference Include="DevExpress.Blazor.Reporting.Viewer" Version="24.1.6" />
-    <PackageReference Include="DevExpress.Data" Version="24.1.6" />
+    <PackageReference Include="DevExpress.Blazor" Version="24.1.5" />
+    <PackageReference Include="DevExpress.Blazor.Dashboard" Version="24.1.5" />
+    <PackageReference Include="DevExpress.Blazor.es" Version="24.1.5" />
+    <PackageReference Include="DevExpress.Blazor.Reporting.JSBasedControls" Version="24.1.5" />
+    <PackageReference Include="DevExpress.Blazor.Reporting.Viewer" Version="24.1.5" />
+    <PackageReference Include="DevExpress.Data" Version="24.1.5" />
+    <PackageReference Include="DevExpress.DataAccess" Version="24.1.5" />
+    <PackageReference Include="DevExpress.Drawing.Skia" Version="24.1.5" />
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.WebAssembly" Version="7.3.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.8" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.8" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -29,6 +34,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="2.88.8" />
+    <PackageReference Include="SkiaSharp.Views.Blazor" Version="2.88.8" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
 
@@ -38,7 +46,8 @@
 
 
 	<ItemGroup>
-	  <Folder Include="wwwroot\Reports\" />
+	  <Folder Include="wwwroot\fonts\" />
+	  <Folder Include="wwwroot\reports\" />
 	</ItemGroup>
 
 
@@ -46,6 +55,43 @@
 	  <Content Update="appsettings.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Update="wwwroot\reports\Report.repx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\reports\ReportPrint.repx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\reports\ReportPrintShort.repx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<NativeFileReference Include="$(HarfBuzzSharpStaticLibraryPath)\2.0.23\*.a" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Reports\ReportPrint.cs">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Compile>
+	  <Compile Update="Reports\ReportPrint.Designer.cs">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Compile>
+	  <Compile Update="Reports\ReportPrintShort.cs">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Compile>
+	  <Compile Update="Reports\ReportPrintShort.Designer.cs">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Reports\ReportPrint.resx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Reports\ReportPrintShort.resx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 

@@ -125,6 +125,8 @@ namespace Audi100.Server.Repository
             existingUser.UserEmail = entity.UserEmail;
             existingUser.UserPhone = entity.UserPhone;
             existingUser.UserRoleId = entity.UserRoleId;
+            existingUser.UserRole = entity.UserRole;
+
 
             await db.SaveChangesAsync();
             return existingUser;

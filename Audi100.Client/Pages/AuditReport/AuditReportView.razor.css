@@ -1,84 +1,15 @@
-/* Estilos para la tarjeta que envuelve la tabla */
-.card {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    border: none;
-    background-color: #ffffff;
-    margin-bottom: 20px;
+
+.custom-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px; /* Ajusta el tamaño del botón */
+    width: 16px; /* Ajusta el ancho según tu diseño */
+    height: 16px; /* Ajusta el alto según tu diseño */
+    border-radius: 8px; /* Esquinas redondeadas */
 }
 
-/* Estilo del cuerpo de la tarjeta */
-.card-body {
-    padding: 20px;
+.custom-icon {
+    width: 20px;
+    height: 20px;
 }
-
-/* Estilos de los encabezados */
-h3 {
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-/* Estilo de la tabla */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-    color: #333;
-}
-
-    /* Bordes para las celdas */
-    .table th,
-    .table td {
-        padding: 0.75rem;
-        vertical-align: top;
-        border-top: 1px solid #dee2e6;
-    }
-
-    /* Encabezados de la tabla */
-    .table thead th {
-        vertical-align: bottom;
-        border-bottom: 2px solid #dee2e6;
-    }
-
-/* Estilo alternativo para las filas */
-.table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-/* Estilos de los botones */
-.btn-primary,
-.btn-warning,
-.btn-danger {
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-warning {
-    background-color: #ffca28;
-    color: white;
-}
-
-.btn-danger {
-    background-color: #e74c3c;
-    color: white;
-}
-
-.btn-success {
-    background-color: #28a745;
-    color: white;
-    margin-bottom: 15px;
-}
-
-/* Ajustes para el botón Crear Nuevo */
-.mb-3 {
-    margin-bottom: 20px;
-}
-

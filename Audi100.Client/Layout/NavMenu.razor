@@ -1,4 +1,6 @@
 ﻿@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
 
 <div class="top-row ps-3 navbar navbar-dark custom-navbar">
     <div class="container-fluid">
@@ -21,7 +23,7 @@
         {
             <div class="nav-item px-3">
                 <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showUserMenu)">
-                    <img src="icons/User.svg" alt="Icon Report" class="icono-menu" /> Gestión de usuarios
+                    <img src="icons/User.svg" alt="Icon Report" class="icono-menu" /> Usuarios
 
                     @((showUserMenu ? "▲" : "▼"))
                 </a>
@@ -31,6 +33,41 @@
                         <li class="nav-item">
                             <NavLink class="nav-link" href="UserFrom">
                                 <img src="icons/UserFrom.svg" alt="Icon Report" class="icono-menu" /> Usuarios
+                            </NavLink>
+                        </li>
+                    </ul>
+                }
+            </div>
+        }
+
+        @if (HasAccess(1))
+        {
+            <div class="nav-item px-3">
+                <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showCatalogsMenu)">
+                    <img src="icons/Catalogs.svg" alt="Icon Catalog" class="icono-menu" />   Catálogos
+                    @((showCatalogsMenu ? "▲" : "▼"))
+                </a>
+                @if (showCatalogsMenu)
+                {
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="BscCatalog">
+                                <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" />Bsc
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="ClassificationCatalog">
+                                <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" />Clasificación
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="WeighingCatalog">
+                                <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" /> Ponderación
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="ShortFCatalog">
+                                <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" /> Hallazgo corto
                             </NavLink>
                         </li>
                     </ul>
@@ -132,7 +169,12 @@
                             <NavLink class="nav-link" href="AuditPrintForm">
                                 <img src="icons/CreateAudit.svg" alt="Icon Report" class="icono-menu" /> Crear Acta
                             </NavLink>
-                        </li>
+                        </li>                        
+@*                         <li class="nav-item">
+                            <NavLink class="nav-link" href="Report">
+                                <img src="icons/CreateAudit.svg" alt="Icon Report" class="icono-menu" /> Test
+                            </NavLink>
+                        </li> *@
                     </ul>
                 }
             </div>
@@ -156,40 +198,6 @@
             </div>
         }
 
-        @if (HasAccess(1))
-        {
-            <div class="nav-item px-3">
-                <a class="nav-link" href="javascript:void(0)" @onclick="() => ToggleMenu(ref showCatalogsMenu)">
-                    <img src="icons/Catalogs.svg" alt="Icon Catalog" class="icono-menu" />   Catálogos
-                    @((showCatalogsMenu ? "▲" : "▼"))
-                </a>
-                @if (showCatalogsMenu)
-                {
-                    <ul class="nav flex-column ms-3">
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="BscCatalog">
-                                <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" />Bsc
-                            </NavLink>
-                        </li>
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="ClassificationCatalog">
-                                <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" />Clasificación
-                            </NavLink>
-                        </li>
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="WeighingCatalog">
-                                <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" /> Poderación
-                            </NavLink>
-                        </li>
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="ShortFCatalog">
-                                <img src="icons/AddCatalogs.svg" alt="Icono Catalog" class="icono-menu" /> Hallazgo corto
-                            </NavLink>
-                        </li>
-                    </ul>
-                }
-            </div>
-        }
     </nav>
 </div>
 
@@ -225,11 +233,17 @@
         {
             UserRole = parsedRole;
         }
+
+        if (!HasAccess(1, 2, 3))
+        {
+            Navigation.NavigateTo("/");
+        }
     }
 
     private bool HasAccess(params int[] allowedRoles)
     {
         return allowedRoles.Contains(UserRole);
     }
+
 
 }

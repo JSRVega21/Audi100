@@ -19,7 +19,7 @@ namespace Audi100.Models
         [Required(ErrorMessage = "Se debe ingresar el número de hallazgo")]
         public decimal? NumberOfFindings { get; set; }
         [Required(ErrorMessage = "Se debe ingresar la fecha")]
-        public DateTime? DateCreate { get; set; }
+        public DateTime? DateCreate { get; set; } = DateTime.Now;
         [Required(ErrorMessage = "Se debe seleccionar el nivel de hallazgo")]
         public string? FindLevel { get; set; }
         [Required(ErrorMessage = "Se debe seleccionar una ponderación")]
@@ -41,9 +41,23 @@ namespace Audi100.Models
         public string? CauseAudit { get; set; }
         public string? EffectAudit { get; set; }
         public string? RequirementOfAudit { get; set; }
-        public string? PlanOfActionAudit { get; set; }
+        public string? PlanOfActionAudit { get; set; }                             
         [Required(ErrorMessage = "Se debe colocar el detalle del hallazgo")]
         public string? DetailFindingAudit { get; set; }
+        public int? AuditStatus { get; set; }
+        public string? AuditStatusText { get; set; }
+        [Required(ErrorMessage = "Se debe colocar el centro de costo")]
+        public string? AuditFindingCostCenter { get; set; }
+        [Required(ErrorMessage = "Se debe colocar el departamento")]
+        public string? AuditFindingDepto { get; set; }
+        [Required(ErrorMessage = "Se debe colocar la sección")]
+        public string? AuditFindingSeccion { get; set; }
+        [Required(ErrorMessage = "Se seleccionar un Auditor")]
+        public string? AuditorFinding { get; set; }
+        [Required(ErrorMessage = "Se debe seleccionar un Responsable")]
+        public string? EmployeeFinding { get; set; }
+        [Required(ErrorMessage = "Se debe seleccionar un Responsable")]
+        public string? EmployeeFinding2 { get; set; }
         public RecordLog? RecordLog { get; set; } = new RecordLog();
 
     }

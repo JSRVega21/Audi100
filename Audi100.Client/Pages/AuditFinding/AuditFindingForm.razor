@@ -48,7 +48,7 @@
             </DxFormLayoutItem>
 
             <!-- Fecha del hallazgo -->
-            <DxFormLayoutItem Caption="Fecha del hallazgo:">
+            <DxFormLayoutItem Caption="Fecha del hallazgo:" ReadOnly="true">
                 <DxDateEdit @bind-Date="@AuditFinding.DateCreate" NullText="DD/MM/YYYY" />
                 <ValidationMessage For="@(() => AuditFinding.DateCreate)" />
             </DxFormLayoutItem>
@@ -75,6 +75,60 @@
             <DxFormLayoutItem Caption="Nivel de Hallazgo" ColSpanMd="4">
                 <DxComboBox Data="@FindLevel" @bind-Value="AuditFinding.FindLevel" NullText="Seleccionar un Nivel" />
                 <ValidationMessage For="@(() => AuditFinding.FindLevel)" />
+            </DxFormLayoutItem>
+
+            <!-- Centro de costo -->
+            <DxFormLayoutItem Caption="Hallazgo Centro de Costo" ColSpanMd="4">
+                <DxComboBox Data="CostCenter" @bind-Value="AuditFinding.AuditFindingCostCenter" ValueFieldName="@nameof(CostCenterUnit.NomCostCenterUnit)"
+                            TextFieldName="@nameof(CostCenterUnit.NomCostCenterUnit)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione un Centro de Costo " />
+                <ValidationMessage For="@(() => AuditFinding.AuditFindingCostCenter)" />
+            </DxFormLayoutItem>
+
+            <!-- División -->
+            <DxFormLayoutItem Caption="Hallazgo Division" ColSpanMd="4">
+                <DxComboBox Data="Division" @bind-Value="AuditFinding.AuditFindingDepto" ValueFieldName="@nameof(CostDivision.NomDivision)"
+                            TextFieldName="@nameof(CostDivision.NomDivision)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione una Division " />
+                <ValidationMessage For="@(() => AuditFinding.AuditFindingDepto)" />
+            </DxFormLayoutItem>
+
+            <!-- Sección -->
+            <DxFormLayoutItem Caption="Hallazgo Sección" ColSpanMd="4">
+                <DxComboBox Data="Seccions" @bind-Value="AuditFinding.AuditFindingSeccion" ValueFieldName="@nameof(CostSeccion.NomSeccion)"
+                            TextFieldName="@nameof(CostSeccion.NomSeccion)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccione una Sección" />
+                <ValidationMessage For="@(() => AuditFinding.AuditFindingSeccion)" />
+            </DxFormLayoutItem>
+
+            <!-- Nombre de Auditor para el acta -->
+            <DxFormLayoutItem Caption="Auditor del acta">
+                <DxComboBox Data="Auditors" @bind-Value="AuditFinding.AuditorFinding" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccionar el Auditor para el acta" />
+                <ValidationMessage For="@(() => AuditFinding.AuditorFinding)" />
+            </DxFormLayoutItem>
+
+            <!-- Responsable para el acta -->
+            <DxFormLayoutItem Caption="Responsable del acta">
+                <DxComboBox Data="Employees" @bind-Value="AuditFinding.EmployeeFinding" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccionar un Responsable para el acta" />
+                <ValidationMessage For="@(() => AuditFinding.EmployeeFinding)" />
+            </DxFormLayoutItem>
+
+            <!-- Responsable para el acta -->
+            <DxFormLayoutItem Caption="Responsable del acta">
+                <DxComboBox Data="Employees" @bind-Value="AuditFinding.EmployeeFinding2" ValueFieldName="@nameof(Employee.Name_Employee)"
+                            TextFieldName="@nameof(Employee.Name_Employee)" SearchMode="@ListSearchMode.AutoSearch"
+                            SearchFilterCondition="@ListSearchFilterCondition.Contains" ListRenderMode="ListRenderMode.Virtual"
+                            NullText="Seleccionar un Responsable para el acta" />
+                <ValidationMessage For="@(() => AuditFinding.EmployeeFinding2)" />
             </DxFormLayoutItem>
 
             <!-- Ponderación Clasificacion -->
@@ -130,7 +184,7 @@
             </DxFormLayoutItem>
 
             <!-- Ponderación positiva -->
-            <DxFormLayoutItem Caption="Poderación (+)">
+            <DxFormLayoutItem Caption="Ponderación (+)">
                 <DxMaskedInput @bind-Value="@AuditFinding.PositiveWeighting" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
             </DxFormLayoutItem>
 
@@ -163,6 +217,21 @@
                             NullText="Seleccione un Auditor" />
             </DxFormLayoutItem>
 
+            <DxFormLayoutItem Caption="Estatus del seguimiento" ColSpanMd="5">
+                <DxComboBox Data="@Status"
+                            @bind-Value="AuditFinding.AuditStatus"
+                            ValueFieldName="Key"
+                            TextFieldName="Value"
+                            NullText="Seleccionar"
+                            @bind-Value:after="@(async () => SetStatusText(AuditFinding.AuditStatus))" />
+                <ValidationMessage For="@(() => AuditFinding.AuditStatus)" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="false">
+                <DxMaskedInput @bind-Value="@AuditFinding.AuditStatus" />
+            </DxFormLayoutItem>
+
+
         </DxFormLayoutGroup>
     </DxFormLayout>
 
@@ -173,12 +242,16 @@
                 <DxFormLayoutGroup Caption="Descripción del Hallazgo" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
                     <!-- Condición -->
                     <DxFormLayoutItem Caption="Condición" ColSpanMd="12">
-                        <DxMemo @bind-Text="@AuditFinding.ConditionAudit" NullText="¿Qué revisó y descripción general de hallazgos?" CssClass="h-100" />
+                        <DxMemo @bind-Text="@AuditFinding.ConditionAudit"
+                                @oninput="GenerateDetailFindingAudit" NullText="¿Qué revisó y descripción general de hallazgos?"
+                                CssClass="h-100" />
                     </DxFormLayoutItem>
 
                     <!-- Criterio -->
                     <DxFormLayoutItem Caption="Criterio" ColSpanMd="12">
-                        <DxMemo @bind-Text="@AuditFinding.CriterionAudit" NullText="¿Por qué es un hallazgo?" CssClass="h-100" />
+                        <DxMemo @bind-Text="@AuditFinding.CriterionAudit"
+                                @oninput="GenerateDetailFindingAudit" NullText="¿Por qué es un hallazgo?"
+                                CssClass="h-100" />
                     </DxFormLayoutItem>
 
                     <!-- Fundamento -->
@@ -198,14 +271,14 @@
 
                     <!-- Requerimiento de auditoría -->
                     <DxFormLayoutItem Caption="Requerimiento de auditoría" ColSpanMd="12">
-                        <DxMemo @bind-Text="@AuditFinding.RequirementOfAudit" NullText="Plan de acción de la administración para corregir o prevenir" CssClass="h-100" />
+                        <DxMemo @bind-Text="@AuditFinding.RequirementOfAudit"
+                                @oninput="GenerateDetailFindingAudit" NullText="Plan de acción de la administración para corregir o prevenir" CssClass="h-100" />
                     </DxFormLayoutItem>
 
                     <!-- Plan de acción -->
                     <DxFormLayoutItem Caption="Plan de acción" ColSpanMd="12">
                         <DxMemo @bind-Text="@AuditFinding.PlanOfActionAudit" NullText="Seguimiento" CssClass="h-100" />
                     </DxFormLayoutItem>
-
                 </DxFormLayoutGroup>
             </DxFormLayout>
         </div>
@@ -213,29 +286,40 @@
         <!-- Columna derecha -->
         <div class="col-md-6">
             <DxFormLayout>
-                <DxFormLayoutGroup Caption="Detalle del hallazgo" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
+                <DxFormLayoutGroup Caption="Detalle del hallazgo concatenado" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
                     <!-- Hallazgo Detalle -->
                     <DxFormLayoutItem Caption="Hallazgo Detalle" ColSpanMd="12">
-                        <DxMemo @bind-Text="@AuditFinding.DetailFindingAudit" NullText="Hallazgo Detalle" CssClass="h-100"
-                                Rows="20"/>
+                        <DxMemo @bind-Text="@AuditFinding.DetailFindingAudit" NullText="Aquí se concatena la información" CssClass="h-100" Rows="19" ReadOnly="true" />
                     </DxFormLayoutItem>
                     <ValidationMessage For="@(() => AuditFinding.DetailFindingAudit)" />
-                </DxFormLayoutGroup> 
+                </DxFormLayoutGroup>
+            </DxFormLayout>
+
+            <DxFormLayout>
+                <DxFormLayoutGroup Caption="Actualizar Detalle del hallazgo">
+                    <DxFormLayoutItem >
+                        <ChildContent Context="buttonContext">
+                            <DxButton Click="@GenerateDetailFindingAudit" CssClass="btn btn-secondary">
+                                Actualizar el Hallazgo Detalle
+                            </DxButton>
+                        </ChildContent>
+                    </DxFormLayoutItem>
+                </DxFormLayoutGroup>
             </DxFormLayout>
         </div>
     </div>
 
     <DxFormLayout>
         <DxFormLayoutGroup Caption="Apartado de archivos" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
-            <DxFormLayoutItem Caption="Seleccione las imágenes o PDFs que desea cargar:" ColSpanMd="12">
+            <DxFormLayoutItem Caption="Seleccione las imágenes o PDFs que desea cargar: " ColSpanMd="12">
                 <InputFile OnChange="OnInputFileChange" Multiple />
+                No pasar de 500MB
             </DxFormLayoutItem>
         </DxFormLayoutGroup>
     </DxFormLayout>
 
-
     <DxFormLayout>
-        <DxFormLayoutGroup>
+        <DxFormLayoutGroup Caption="Botones">
             <DxFormLayoutItem>
                 <button type="submit" class="dx-button">
                     @(AuditFindingId.HasValue ? "Actualizar Hallazgo" : "Crear Hallazgo")
@@ -257,8 +341,24 @@
     private List<ShortF> shortF { get; set; } = new List<ShortF>();
 
     private List<Employee> Auditors { get; set; } = new List<Employee>();
+    private List<Employee> Employees { get; set; } = new List<Employee>();
 
     private List<string> FindLevel = new() { "Bajo", "Medio", "Alto" };
+
+    private Dictionary<int, string> Status = new Dictionary<int, string>
+    {
+        {0, "Sin respuesta"},
+        {1, "Parcial"},
+        {2, "Concluida"},
+        {3, "No terminada"}
+    };
+
+    private List<CostCenterUnit> CostCenter { get; set; } = new List<CostCenterUnit>();
+    private List<CostSeccion> Seccions { get; set; } = new List<CostSeccion>();
+    private List<CostDivision> Division { get; set; } = new List<CostDivision>();
+
+    public int? AuditStatus { get; set; }
+    public string? AuditStatusText { get; set; }
 
     private Photo photo = new Photo(); 
     private IBrowserFile file; 
@@ -268,14 +368,28 @@
     #region OnInitialized
     protected override async Task OnInitializedAsync()
     {
-        auditReport = (await AuditReportService.GetListAsync()).ToList();
+        auditReport = (await AuditReportService.GetListAsync())
+                      .OrderByDescending(r => r.AuditReportId) 
+                      .ToList();
         weighing = (await WeighingService.GetListAsync()).ToList();
         shortF = (await ShortFService.GetListAsync()).ToList();
         Auditors = (await GetAuditor()).ToList();
+        Employees = (await GetEmployee()).ToList();
+        CostCenter = (await GetCostCenterUnit()).ToList();
+        Seccions = (await GetSeccion()).ToList();
+        Division = (await GetDivison()).ToList();
 
         if (AuditFindingId.HasValue)
         {
             AuditFinding = await AuditFindingService.GetByKeyAsync(AuditFindingId.Value) ?? new AuditFinding();
+        }
+        else
+        {
+            AuditFinding = new AuditFinding
+                {
+                    AuditStatus = 0,
+                    AuditStatusText = Status[0]
+                };
         }
     }
 
@@ -283,6 +397,7 @@
     {
         try
         {
+            GenerateDetailFindingAudit();
             if (AuditFinding.AuditFindingId > 0)
             {
                 var result = await AuditFindingService.UpdateAsync(AuditFinding);
@@ -378,7 +493,6 @@
         }
     }
 
-
     #endregion
 
     #region Employee
@@ -387,9 +501,42 @@
         var query = $"api/SqlData/GetAudit";
         return await Http.GetFromJsonAsync<IEnumerable<Employee>>(query);
     }
+
+    public async Task<IEnumerable<Employee>> GetEmployee()
+    {
+        var query = $"api/SqlData/GetEmployee";
+        return await Http.GetFromJsonAsync<IEnumerable<Employee>>(query);
+    }
     #endregion
 
     #region Fuction
+
+    private void GenerateDetailFindingAudit()
+    {
+        AuditFinding.DetailFindingAudit = string.Empty;
+
+        var parts = new List<string>();
+
+        if (!string.IsNullOrEmpty(AuditFinding.ConditionAudit))
+        {
+            parts.Add(AuditFinding.ConditionAudit);
+        }
+
+        if (!string.IsNullOrEmpty(AuditFinding.CriterionAudit))
+        {
+            parts.Add(AuditFinding.CriterionAudit);
+        }
+
+        if (!string.IsNullOrEmpty(AuditFinding.RequirementOfAudit))
+        {
+            parts.Add(AuditFinding.RequirementOfAudit);
+        }
+
+        AuditFinding.DetailFindingAudit = string.Join(Environment.NewLine + Environment.NewLine, parts);
+
+        StateHasChanged();
+    }
+
     
     private List<IBrowserFile> files = new List<IBrowserFile>();
 
@@ -464,7 +611,37 @@
         StateHasChanged();
     }
 
+    private void SetStatusText(int? selected)
+    {
+        AuditFinding.AuditStatus = selected ?? 0;
 
+        if (Status.TryGetValue(AuditFinding.AuditStatus.Value, out var text))
+        {
+            AuditFinding.AuditStatusText = text;
+        }
+        else
+        {
+            AuditFinding.AuditStatusText = string.Empty;
+        }
+
+        StateHasChanged();
+    }
+
+    public async Task<IEnumerable<CostCenterUnit>> GetCostCenterUnit()
+    {
+        var query = $"api/SqlData/GetCostCenterUnit";
+        return await Http.GetFromJsonAsync<IEnumerable<CostCenterUnit>>(query);
+    }
+    public async Task<IEnumerable<CostSeccion>> GetSeccion()
+    {
+        var query = $"api/SqlData/GetSeccion";
+        return await Http.GetFromJsonAsync<IEnumerable<CostSeccion>>(query);
+    }
+    public async Task<IEnumerable<CostDivision>> GetDivison()
+    {
+        var query = $"api/SqlData/GetDivision";
+        return await Http.GetFromJsonAsync<IEnumerable<CostDivision>>(query);
+    }
 
     #endregion
 }

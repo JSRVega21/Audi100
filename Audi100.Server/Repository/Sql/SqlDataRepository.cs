@@ -32,8 +32,7 @@ namespace Audi100.Server.Repository
                     SELECT [NOM_DEPTO],
                            [NOM_DIVISION],
                            [NOM_SECCION],
-                           [NOM_COMPLETO],
-                           [DESC_PUESTO]
+                           CONCAT([NOM_COMPLETO], ',' , [DESC_PUESTO]) AS NOM_COMPLETO
                     FROM [SBO_FFACSA_APPS].[dbo].[Costo_Personal_Auditoria]
                     WHERE (@nomDepto IS NULL OR NOM_DEPTO = @nomDepto)
                     AND (@nomDivision IS NULL OR NOM_DIVISION = @nomDivision)
@@ -56,8 +55,7 @@ namespace Audi100.Server.Repository
                                 NomDepto = reader.GetString(reader.GetOrdinal("NOM_DEPTO")),
                                 NomDivision = reader.GetString(reader.GetOrdinal("NOM_DIVISION")),
                                 NomSeccion = reader.GetString(reader.GetOrdinal("NOM_SECCION")),
-                                NomCompleto = reader.GetString(reader.GetOrdinal("NOM_COMPLETO")),
-                                DescPuesto = reader.GetString(reader.GetOrdinal("DESC_PUESTO"))
+                                NomCompleto = reader.GetString(reader.GetOrdinal("NOM_COMPLETO"))
                             };
                             costCenters.Add(costCenter);
                         }
@@ -71,6 +69,95 @@ namespace Audi100.Server.Repository
             }
 
             return costCenters;
+        }
+
+        #endregion
+
+        #region GetCenterCostUnit
+        public async Task<IEnumerable<CostCenterUnit>> GetCostCenterUnit()
+        {
+            var seccions = new List<CostCenterUnit>();
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var query = @"
+                        SELECT DISTINCT [NOM_DEPTO]
+                        FROM [SBO_FFACSA_APPS].[dbo].[Costo_Personal_Auditoria]
+                        ORDER BY [NOM_DEPTO] ASC;
+                        ";
+
+                    var command = new SqlCommand(query, connection);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var seccion = new CostCenterUnit
+                            {
+                                NomCostCenterUnit = reader.GetString(reader.GetOrdinal("NOM_DEPTO")),
+                            };
+                            seccions.Add(seccion);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al ejecutar la consulta: {ex.Message}");
+                throw;
+            }
+
+            return seccions;
+        }
+
+        #endregion
+
+        #region CostCenterSeccion
+        public async Task<IEnumerable<CostCenterSeccion>> GetCostCenterSeccion()
+        {
+            var seccions = new List<CostCenterSeccion>();
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var query = @"
+                            SELECT DISTINCT NOM_DEPTO AS NOM_COSTCENTERSECCION
+                            FROM [SBO_FFACSA_APPS].[dbo].[Costo_Personal_Auditoria]
+                            UNION
+                            SELECT DISTINCT NOM_SECCION
+                            FROM [SBO_FFACSA_APPS].[dbo].[Costo_Personal_Auditoria]
+                            ORDER BY NOM_COSTCENTERSECCION ASC;
+                        ";
+
+                    var command = new SqlCommand(query, connection);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var seccion = new CostCenterSeccion
+                            {
+                                NomCostCenterSeccion = reader.GetString(reader.GetOrdinal("NOM_COSTCENTERSECCION")),
+                            };
+                            seccions.Add(seccion);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al ejecutar la consulta: {ex.Message}");
+                throw;
+            }
+
+            return seccions;
         }
 
         #endregion

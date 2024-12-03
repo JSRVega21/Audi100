@@ -18,12 +18,22 @@
             <DxGrid @ref="Grid" Data="@AuditPrints" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
                 <Columns>
                     <DxGridDataColumn FieldName="@nameof(AuditPrint.AuditPrintId)" Caption="Id Acta" />
-                    <DxGridDataColumn FieldName="@nameof(AuditPrint.ReportCode)" Caption="Codigo Informe"/>
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.ReportCode)" Caption="Codigo Informe" />
                     <DxGridDataColumn FieldName="@nameof(AuditPrint.DisplayName)" Caption="Descripción del informe" />
                     <DxGridDataColumn FieldName="@nameof(AuditPrint.AuditorId1)" Caption="Auditor a cargo" />
-                    <DxGridDataColumn FieldName="@nameof(AuditPrint.DateI)" Caption="Fecha acta"  />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.DateI)" Caption="Fecha acta" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.CostSeccionPrint)" Caption="Centro de Costo" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.DateE)" Caption="Fecha final" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.EmployeeId1)" Caption="Administrador" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.AuditorId1)" Caption="Auditor a cargo" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.EmployeeId2)" Caption="Bodeguero" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.AuditorId2)" Caption="Auditor" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.EmployeeId3)" Caption="Centro de Costo" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.AuditorId3)" Caption="Auditor 2" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.OtherEmployee)" Caption="Otro" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditPrint.OtherEmployee2)" Caption="Otro 2" Visible="false" />
                     <DxGridSelectionColumn Width="60px" />
-                        <DxGridCommandColumn Width="230px">
+                    <DxGridCommandColumn Width="230px">
                         <HeaderTemplate>
                             <span>Acciones</span>
                         </HeaderTemplate>
@@ -31,19 +41,31 @@
                             @if (commandContext.DataItem is AuditPrint AuditPrint)
                             {
                                 <div class="d-flex justify-content-start">
-                                    <DxButton Click="@(() => Print(AuditPrint.AuditPrintId))"
-                                              CssClass="btn btn-danger ml-2">
-                                        Imprimir
+
+                                    <DxButton Click="@(() => Print(AuditPrint.AuditPrintId))" 
+                                              RenderStyle="ButtonRenderStyle.Primary"
+                                              CssClass="custom-button">
+                                        <img src="icons/DocumentFrom.svg" class="custom-icon" />
                                     </DxButton>
+                                    &nbsp;
+                                    <DxButton Click="@(() => PrintShort(AuditPrint.AuditPrintId))"
+                                              RenderStyle="ButtonRenderStyle.Primary"
+                                              CssClass="custom-button">
+                                        <img src="icons/DocumentShortFrom.svg" class="custom-icon" />
+                                    </DxButton>
+                                    &nbsp;
                                     <DxButton Click="@(() => EditReport(AuditPrint.AuditPrintId))"
-                                              CssClass="btn btn-warning ml-2">
-                                        Editar
+                                              RenderStyle="ButtonRenderStyle.Warning"
+                                              CssClass="custom-button">
+                                        <img src="icons/EditFrom.svg" class="custom-icon" />
                                     </DxButton>
+                                    &nbsp;
                                     <DxButton Click="@(() => ConfirmDelete(AuditPrint.AuditPrintId))"
-                                              CssClass="btn btn-danger ml-2">
-                                        Eliminar
+                                              RenderStyle="ButtonRenderStyle.Danger"
+                                              CssClass="custom-button">
+                                        <img src="icons/DeleteFrom.svg" class="custom-icon" />
                                     </DxButton>
-                                 </div>
+                                </div>
 
                                 @if (AuditPrintIdToDelete == AuditPrint.AuditPrintId && showConfirmDelete)
                                 {
@@ -65,8 +87,8 @@
                 <ToolbarTemplate>
                     <DxToolbar>
                         <DxToolbarItem Text="Ajuste de columnas" Click="Grid_FitWidths" RenderStyle="ButtonRenderStyle.Secondary" />
-
-                        <DxToolbarItem Text="Excel" Click="ExportXlsx_Click" BeginGroup="true"/>
+                        <DxToolbarItem Alignment="ToolbarItemAlignment.Right" Text="Selector de Columnas" RenderStyle="ButtonRenderStyle.Secondary" IconCssClass="grid-icon-column-chooser" Click="ColumnChooserButton_Click" CssClass="mx-1" />
+                        <DxToolbarItem Text="Excel" Click="ExportXlsx_Click" BeginGroup="true" />
                     </DxToolbar>
                 </ToolbarTemplate>
             </DxGrid>
@@ -78,8 +100,12 @@
     </div>
 </div>
 
-<DxButton Click="CreateReport" CssClass="btn btn-success mb-3">
-    Crear Nueva acta
+<br/>
+
+<DxButton Click="CreateReport"
+    RenderStyle="ButtonRenderStyle.Info"
+          CssClass="custom-button">
+    <img src="icons/PlusFrom.svg" class="custom-icon" />
 </DxButton>
 
 @code {
@@ -87,6 +113,7 @@
     List<AuditPrint> AuditPrints = new List<AuditPrint>();
     private bool showConfirmDelete = false;
     private int AuditPrintIdToDelete = 0;
+    private int ManualAuditPrintId; // ID para entrada manual
     IGrid Grid { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -102,7 +129,7 @@
 
     private async Task LoadAuditReports()
     {
-        auditReports = (await AuditReportService.GetListAsync()).ToList(); 
+        auditReports = (await AuditReportService.GetListAsync()).ToList();
     }
 
     private void CreateReport()
@@ -117,7 +144,12 @@
 
     private void Print(int AuditPrintId)
     {
-        NavigationManager.NavigateTo($"/AuditPrintPrint/{AuditPrintId}");
+        NavigationManager.NavigateTo($"/AuditReportPrint/{AuditPrintId}");
+    }
+
+    private void PrintShort(int AuditPrintId)
+    {
+        NavigationManager.NavigateTo($"/AuditReportPrintShort/{AuditPrintId}");
     }
 
     private void ConfirmDelete(int AuditPrintId)
@@ -155,7 +187,8 @@
     {
         Grid.AutoFitColumnWidths();
     }
-
-
-
+    void ColumnChooserButton_Click()
+    {
+        Grid.ShowColumnChooser();
+    }
 }

@@ -1,0 +1,54 @@
+﻿@page "/AuditReportPrint/{AuditPrintId:int}"
+@using DevExpress.Blazor.Reporting
+@using DevExpress.XtraReports.UI
+@inject NavigationManager NavigationManager
+
+<DxDocumentViewer ReportName="@ReportName" />
+
+<br />
+
+<DxButton Click="GoBack"
+              RenderStyle="ButtonRenderStyle.Success"
+              CssClass="custom-button">
+        <img src="icons/RestartFrom.svg" class="custom-icon" />
+</DxButton>
+
+
+@code {
+    [Parameter]
+    public int AuditPrintId { get; set; } 
+
+    private string ReportName { get; set; } 
+
+    protected override void OnParametersSet()
+    {
+        if (AuditPrintId <= 0)
+        {
+            NavigationManager.NavigateTo("/AuditPrintView");
+            return;
+        }
+
+        CustomDataSourceWizardJsonDataConnectionStorage.SetAuditPrintId(AuditPrintId); 
+        UpdateReportConnection(AuditPrintId);
+    }
+
+    private void UpdateReportConnection(int auditPrintId)
+    {
+        var jsonDataSource = new DevExpress.DataAccess.Json.JsonDataSource
+            {
+                ConnectionName = "ReportPrint",
+                JsonSource = new DevExpress.DataAccess.Json.UriJsonSource
+                {
+                    Uri = new Uri($"https://auditifyserver.ffacsa.com/api/SqlReportPrint/GetReportPrint?AuditPrintId={auditPrintId}")
+                }
+            };
+
+        ReportName = "ReportPrint";
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/AuditPrintView", forceLoad: false);
+    }
+
+}

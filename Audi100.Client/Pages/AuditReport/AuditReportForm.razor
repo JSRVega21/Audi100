@@ -116,15 +116,15 @@
             </DxFormLayoutItem>
 
             <!-- Fecha de Creación -->
-            <DxFormLayoutItem Caption="Fecha de Creación:" ColSpanMd="4">
+            <DxFormLayoutItem Caption="Fecha de Creación:" ColSpanMd="4" ReadOnly="true">
                 <DxDateEdit @bind-Date="@auditReport.CreationDate" NullText="DD/MM/YYYY" />
                 <ValidationMessage For="@(() => auditReport.CreationDate)" />
             </DxFormLayoutItem>
 
-            <!-- Fecha de Modificación -->
+@*             <!-- Fecha de Modificación -->
             <DxFormLayoutItem Caption="Fecha de Modificación:">
                 <DxDateEdit @bind-Date="@auditReport.ModificationDate" NullText="DD/MM/YYYY" />
-            </DxFormLayoutItem>
+            </DxFormLayoutItem> *@
 
             <!-- Fecha prevista para iniciar -->
             <DxFormLayoutItem Caption="Fecha prevista para iniciar:">
@@ -137,13 +137,13 @@
     <DxFormLayout>
         <DxFormLayoutGroup Caption="Planificicación del informe" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start">
             <!--Origen de la revisión-->
-            <DxFormLayoutItem Caption="Origen de Revisión :">
+            <DxFormLayoutItem Caption="Origen de Revisión" ColSpanMd="6">
                 <DxComboBox Data="@origin" @bind-Value="auditReport.OriginOfTheReview" NullText="Seleccione un Origen" />
                 <ValidationMessage For="@(() => auditReport.OriginOfTheReview)" />
             </DxFormLayoutItem>
 
             <!-- Clasificación de revisión -->
-            <DxFormLayoutItem Caption="Clasificación de Revisión">
+            <DxFormLayoutItem Caption="Clasificación de Revisión" ColSpanMd="6">
                 <DxComboBox Data="ClassificationsList" @bind-Value="auditReport.ClassificationId" ValueFieldName="@nameof(Classification.ClassificationId)"
                             TextFieldName="@nameof(Classification.Description)" SearchMode="@ListSearchMode.AutoSearch"
                             @bind-Value:after="@(async () => SetClassification(auditReport.ClassificationId))"
@@ -157,7 +157,7 @@
             </DxFormLayoutItem>
 
             <!-- BSC Indicador -->
-            <DxFormLayoutItem Caption="BSC Indicador">
+            <DxFormLayoutItem Caption="BSC Indicador" ColSpanMd="6">
                 <DxComboBox Data="BscList" @bind-Value="auditReport.BscId" ValueFieldName="@nameof(Bsc.BscId)"
                             TextFieldName="@nameof(Bsc.Description)" SearchMode="@ListSearchMode.AutoSearch"
                             @bind-Value:after="@(async () => SetBsc(auditReport.BscId))"
@@ -170,9 +170,24 @@
                 <DxMaskedInput @bind-Value="@auditReport.Bsc" />
             </DxFormLayoutItem>
 
+            <!--Estatus del informe-->
+            <DxFormLayoutItem Caption="Estatus del seguimiento" ColSpanMd="6">
+                <DxComboBox Data="@Status"
+                            @bind-Value="auditReport.AuditStatus"
+                            ValueFieldName="Key"
+                            TextFieldName="Value"
+                            NullText="Seleccionar"
+                            @bind-Value:after="@(async () => SetStatusText(auditReport.AuditStatus))" />
+                <ValidationMessage For="@(() => auditReport.AuditStatus)" />
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem Visible="false">
+                <DxMaskedInput @bind-Value="@auditReport.AuditStatusText" />
+            </DxFormLayoutItem>
+
             <!--Descripción del informe-->
-            <DxFormLayoutItem Caption="Descripción del informe">
-                <DxMemo @bind-Text="@auditReport.ReportDescription" NullText="Descripción del informe" />
+            <DxFormLayoutItem Caption="Descripción del informe" ColSpanMd="12" >
+                <DxMemo @bind-Text="@auditReport.ReportDescription" NullText="Descripción del informe" CssClass="h-100" Rows="10" />
                 <ValidationMessage For="@(() => auditReport.ReportDescription)" />
             </DxFormLayoutItem>
 
@@ -190,11 +205,11 @@
             </DxFormLayoutItem>
 
             <!-- Fecha del informe -->
-            <DxFormLayoutItem Caption="Fecha del informe:">
+            <DxFormLayoutItem Caption="Fecha del informe:" ColSpanMd="12">
                 <DxDateEdit @bind-Date="@auditReport.ReportDate" NullText="DD/MM/YYYY" />
                 <ValidationMessage For="@(() => auditReport.ReportDate)" />
             </DxFormLayoutItem>
-
+@* 
             <!-- Faltante por diferencias -->
             <DxFormLayoutItem Caption="Faltante por diferencias:">
                 <DxMaskedInput @bind-Value="@auditReport.Shortage" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
@@ -220,7 +235,7 @@
             <DxFormLayoutItem Caption="Diferencias en Qtz:">
                 <DxMaskedInput @bind-Value="@auditReport.MissingInQ" Mask="Q#,###,###,###0.##" NullText="Q0,000.00" />
             </DxFormLayoutItem>
-
+ *@
             <!-- Auditor  -->
             <DxFormLayoutItem Caption="Auxilitar Auditor:">
                 <DxComboBox Data="Auditors" @bind-Value="auditReport.AuditorId1" ValueFieldName="@nameof(Employee.Name_Employee)"
@@ -294,7 +309,7 @@
     </DxFormLayout>
 
     <DxFormLayout>
-        <DxFormLayoutGroup>
+        <DxFormLayoutGroup Caption="Botones">
             <DxFormLayoutItem>
                 <button type="submit" class="dx-button">
                     @(AuditReportId.HasValue ? "Actualizar" : "Crear")
@@ -323,11 +338,23 @@
     private List<Employee> Auditors { get; set; } = new List<Employee>();
     private List<Employee> Employees { get; set; } = new List<Employee>();
 
+    private Dictionary<int, string> Status = new Dictionary<int, string>
+    {
+        {0, "Pendiente"},
+        {1, "En seguimiento"},
+        {2, "Finalizada"},
+        {3, "No terminada"}
+    };
+
+    public int? AuditStatus { get; set; }
+    public string? AuditStatusText { get; set; }
+
+
     #endregion
 
     #region List Disc
     private List<string> priorities = new() { "Baja", "Media", "Alta", "Razonable" };
-    private List<string> origin = new() { "Planificaciada", "Solicitada", "Extraordinaria" };
+    private List<string> origin = new() { "Planificada", "Solicitada", "Extraordinaria" };
     #endregion
 
     #region OnInitialized
@@ -343,6 +370,14 @@
         {
             auditReport = await AuditReportService.GetByKeyAsync(AuditReportId.Value) ?? new AuditReport();
             await LoadInitialDataAsync();
+        }
+        else
+        {
+            auditReport = new AuditReport
+                {
+                    AuditStatus = 0,
+                    AuditStatusText = Status[0]
+                };
         }
     }
 
@@ -483,6 +518,22 @@
         if (selectedObj != null)
         {
             auditReport.Bsc = selectedObj.Description;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetStatusText(int? selected)
+    {
+        auditReport.AuditStatus = selected ?? 0;
+
+        if (Status.TryGetValue(auditReport.AuditStatus.Value, out var text))
+        {
+            auditReport.AuditStatusText = text;
+        }
+        else
+        {
+            auditReport.AuditStatusText = string.Empty;
         }
 
         StateHasChanged();

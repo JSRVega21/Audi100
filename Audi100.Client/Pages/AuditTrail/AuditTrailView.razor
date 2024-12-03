@@ -20,13 +20,19 @@
                     <DxGridDataColumn Caption="Id del hallazgo" FieldName="@nameof(AuditTrail.AuditFindingId)" Width="95px" Visible="false" />
                     <DxGridDataColumn Caption="Id del informe" FieldName="@nameof(AuditTrail.AuditReportId)" Width="95px" Visible="false" />
                     <DxGridDataColumn Caption="Código del informe" FieldName="@nameof(AuditTrail.ReportCode)" />
-                    <DxGridDataColumn Caption="Línea" FieldName="@nameof(AuditTrail.Line)" Width="95px" />
+                    <DxGridDataColumn Caption="Número de seguimiento" FieldName="@nameof(AuditTrail.Line)" Width="95px" />
                     <DxGridDataColumn Caption="Fecha de revisión" FieldName="@nameof(AuditTrail.DateCreate)" Width="95px" />
                     <DxGridDataColumn Caption="Descripción del informe" FieldName="@nameof(AuditTrail.DisplayName)" Width="95px" Visible="false" />
-                    <DxGridDataColumn Caption="Unidad revisada" FieldName="@nameof(AuditTrail.nomDepto)" />
-                    <DxGridDataColumn Caption="División" FieldName="@nameof(AuditTrail.nomDivision)" Visible="false" />
-                    <DxGridDataColumn Caption="Sección" FieldName="@nameof(AuditTrail.nomSeccion)" Visible="false" />
+                    <DxGridDataColumn Caption="Centro de Costo (Informe)" FieldName="@nameof(AuditTrail.nomDepto)" />
+                    <DxGridDataColumn Caption="División (Informe)" FieldName="@nameof(AuditTrail.nomDivision)" Visible="false" />
+                    <DxGridDataColumn Caption="Sección (Informe)" FieldName="@nameof(AuditTrail.nomSeccion)" Visible="false" />
+                    <DxGridDataColumn Caption="Centro de Costo (Hallazgo)" FieldName="@nameof(AuditTrail.AuditTrailCostCenter)" Visible="false" />
+                    <DxGridDataColumn Caption="División (Hallazgo)" FieldName="@nameof(AuditTrail.AuditTrailDepto)" Visible="false" />
+                    <DxGridDataColumn Caption="Sección (Hallazgo)" FieldName="@nameof(AuditTrail.AuditTrailSeccion)" Visible="false" />
                     <DxGridDataColumn Caption="Número de hallago" FieldName="@nameof(AuditTrail.NumberOfFindings)" Visible="false" />
+                    <DxGridDataColumn Caption="Auditor responsable" FieldName="@nameof(AuditTrail.AuditorTrail)" Visible="false" />
+                    <DxGridDataColumn Caption="Responsable" FieldName="@nameof(AuditTrail.EmployeeTrail)" Visible="false" />
+                    <DxGridDataColumn Caption="Responsable" FieldName="@nameof(AuditTrail.EmployeeTrail2)" Visible="false" />
                     <DxGridDataColumn Caption="Detalle del hallazgo" FieldName="@nameof(AuditTrail.DetailFindingAudit)" />
                     <DxGridDataColumn Caption="Nivel de hallazgo" FieldName="@nameof(AuditTrail.FindLevel)" Visible="false" />
                     <DxGridDataColumn Caption="Clasificación de ponderación" FieldName="@nameof(AuditTrail.WeightingClassification)" Visible="false" />
@@ -35,13 +41,22 @@
                     <DxGridDataColumn Caption="Faltante (-)" FieldName="@nameof(AuditTrail.NegativeWeighting)" Visible="false"  />
                     <DxGridDataColumn Caption="Riesgo (+)" FieldName="@nameof(AuditTrail.PositiveRisk)" Visible="false" />
                     <DxGridDataColumn Caption="Riesgo (-)" FieldName="@nameof(AuditTrail.NegativeRisk)" Visible="false" />
+                    <DxGridDataColumn Caption="Sobrante Corregido (+)" FieldName="@nameof(AuditTrail.AuditTrailPositiveWeighting)" Visible="false" />
+                    <DxGridDataColumn Caption="Faltante Corregido (-)" FieldName="@nameof(AuditTrail.AuditTrailNegativeWeighting)" Visible="false" />
+                    <DxGridDataColumn Caption="Riesgo Corregido(+)" FieldName="@nameof(AuditTrail.AuditTrailPositiveRisk)" Visible="false" />
+                    <DxGridDataColumn Caption="Riesgo Corregido(-)" FieldName="@nameof(AuditTrail.AuditTrailNegativeRisk)" Visible="false" />
+                    <DxGridDataColumn Caption="Sobrante Total(+)" FieldName="@nameof(AuditTrail.TotalPositiveWeighting)" Visible="false" />
+                    <DxGridDataColumn Caption="Faltante Total(-)" FieldName="@nameof(AuditTrail.TotalNegativeWeighting)" Visible="false" />
+                    <DxGridDataColumn Caption="Riesgo Total(+)" FieldName="@nameof(AuditTrail.TotalPositiveRisk)" Visible="false" />
+                    <DxGridDataColumn Caption="Riesgo Total(-)" FieldName="@nameof(AuditTrail.TotalNegativeRisk)" Visible="false" />
                     <DxGridDataColumn Caption="Seguiminento en división" FieldName="@nameof(AuditTrail.AuditTrailDepto)" Visible="false" />
                     <DxGridDataColumn Caption="Seguimiento en sección" FieldName="@nameof(AuditTrail.AuditTrailSeccion)" Visible="false" />
                     <DxGridDataColumn Caption="Clasificación de hallazgo" FieldName="@nameof(AuditTrail.AuditTrailWeighting)" Visible="false" />
                     <DxGridDataColumn Caption="Seguimiento del hallazgo" FieldName="@nameof(AuditTrail.AuditTrailFollow)" />
-                    <DxGridDataColumn Caption="Estado Seguimiento" FieldName="@nameof(AuditTrail.AuditTrailStatus)" />
+                    <DxGridDataColumn Caption="ID Estado" FieldName="@nameof(AuditTrail.AuditStatus)" Visible="false" />
+                    <DxGridDataColumn Caption="Estado Seguimiento" FieldName="@nameof(AuditTrail.AuditStatusText)" />
                     <DxGridSelectionColumn Width="60px" />
-                    <DxGridCommandColumn Width="250px">
+                    <DxGridCommandColumn Width="150px">
                         <HeaderTemplate>
                             <span>Acciones</span>
                         </HeaderTemplate>
@@ -49,11 +64,16 @@
                             @if (commandContext.DataItem is AuditTrail AuditTrail)
                             {
                                 <div class="d-flex justify-content-start">
-                                    <DxButton Click="@(() => EditReport(AuditTrail.AuditTrailId))" CssClass="btn btn-warning ml-2">
-                                        Editar
+                                    <DxButton Click="@(() => EditReport(AuditTrail.AuditTrailId))"
+                                              RenderStyle="ButtonRenderStyle.Warning"
+                                              CssClass="custom-button">
+                                        <img src="icons/EditFrom.svg" class="custom-icon" />
                                     </DxButton>
-                                    <DxButton Click="@(() => ConfirmDelete(AuditTrail.AuditTrailId))" CssClass="btn btn-danger ml-2">
-                                        Eliminar
+                                    &nbsp;
+                                    <DxButton Click="@(() => ConfirmDelete(AuditTrail.AuditTrailId))"
+                                              RenderStyle="ButtonRenderStyle.Danger"
+                                              CssClass="custom-button">
+                                        <img src="icons/DeleteFrom.svg" class="custom-icon" />
                                     </DxButton>
                                 </div>
                                 @if (AuditTrailIdToDelete == AuditTrail.AuditTrailId && showConfirmDelete)
@@ -88,8 +108,11 @@
     </div>
 </div>
 
-<DxButton Click="CreateReport" CssClass="btn btn-success mb-3">
-    Crear Nuevo Seguimiento
+<br />
+<DxButton Click="CreateReport"
+          RenderStyle="ButtonRenderStyle.Info"
+          CssClass="custom-button">
+    <img src="icons/PlusFrom.svg" class="custom-icon" />
 </DxButton>
 
 @code {

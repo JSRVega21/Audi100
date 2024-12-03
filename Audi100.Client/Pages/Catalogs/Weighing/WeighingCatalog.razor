@@ -47,7 +47,7 @@
                             <Columns>
                                 <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(Weighing.WeighingId)" Width="95px" />
                                 <DxGridDataColumn Caption="Descripción" FieldName="@nameof(Weighing.Description)" Width="350px" />
-                                <DxGridCommandColumn Width="150px">
+                                <DxGridCommandColumn Width="125px">
                                     <HeaderTemplate>
                                         <span>Acciones</span>
                                     </HeaderTemplate>
@@ -55,11 +55,16 @@
                                         @if (commandContext.DataItem is Weighing Weighing)
                                         {
                                             <div class="d-flex justify-content-start">
-                                                <DxButton Click="@(() => EditReport(Weighing))" CssClass="btn btn-warning ml-2">
-                                                    Editar
+                                                <DxButton Click="@(() => EditReport(Weighing))"
+                                                          RenderStyle="ButtonRenderStyle.Warning"
+                                                          CssClass="custom-button">
+                                                    <img src="icons/EditFrom.svg" class="custom-icon" />
                                                 </DxButton>
-                                                <DxButton Click="@(() => ConfirmDelete(Weighing.WeighingId))" CssClass="btn btn-danger ml-2">
-                                                    Eliminar
+                                                &nbsp;
+                                                <DxButton Click="@(() => ConfirmDelete(Weighing.WeighingId))"
+                                                          RenderStyle="ButtonRenderStyle.Danger"
+                                                          CssClass="custom-button">
+                                                    <img src="icons/DeleteFrom.svg" class="custom-icon" />
                                                 </DxButton>
                                             </div>
                                             @if (WeighingIdToDelete == Weighing.WeighingId && showConfirmDelete)

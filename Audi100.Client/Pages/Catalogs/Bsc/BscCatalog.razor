@@ -49,7 +49,7 @@
                             <Columns>
                                 <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(Bsc.BscId)" Width="95px" />
                                 <DxGridDataColumn Caption="Descripción" FieldName="@nameof(Bsc.Description)" Width="350px" />
-                                <DxGridCommandColumn Width="150px">
+                                <DxGridCommandColumn Width="125px">
                                     <HeaderTemplate>
                                         <span>Acciones</span>
                                     </HeaderTemplate>
@@ -57,11 +57,16 @@
                                         @if (commandContext.DataItem is Bsc bsc)
                                         {
                                             <div class="d-flex justify-content-start">
-                                                <DxButton Click="@(() => EditReport(bsc))" CssClass="btn btn-warning ml-2">
-                                                    Editar
+                                                <DxButton Click="@(() => EditReport(bsc))"
+                                                          RenderStyle="ButtonRenderStyle.Warning"
+                                                          CssClass="custom-button">
+                                                    <img src="icons/EditFrom.svg" class="custom-icon" />
                                                 </DxButton>
-                                                <DxButton Click="@(() => ConfirmDelete(bsc.BscId))" CssClass="btn btn-danger ml-2">
-                                                    Eliminar
+                                                &nbsp;
+                                                <DxButton Click="@(() => ConfirmDelete(bsc.BscId))"
+                                                          RenderStyle="ButtonRenderStyle.Danger"
+                                                          CssClass="custom-button">
+                                                    <img src="icons/DeleteFrom.svg" class="custom-icon" />
                                                 </DxButton>
                                             </div>
                                             @if (bscIdToDelete == bsc.BscId && showConfirmDelete)

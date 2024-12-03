@@ -86,22 +86,24 @@
                                 <DxGridDataColumn Caption="Correo" FieldName="@nameof(User.UserEmail)" />
                                 <DxGridDataColumn Caption="Número de teléfono" FieldName="@nameof(User.UserPhone)" />
                                 <DxGridDataColumn Caption="Rol" FieldName="@nameof(User.UserRole)" />
-                                <DxGridCommandColumn Width="150px">
+                                <DxGridCommandColumn Width="125px">
                                     <HeaderTemplate><span>Acciones</span></HeaderTemplate>
                                     <CellDisplayTemplate Context="commandContext">
                                         @if (commandContext.DataItem is User user)
                                         {
                                             <div class="d-flex justify-content-start">
                                                 <DxButton Click="@(() => EditReport(user))"
-                                                          CssClass="btn btn-warning ml-2">
-                                                    Editar
+                                                          RenderStyle="ButtonRenderStyle.Warning"
+                                                          CssClass="custom-button">
+                                                    <img src="icons/EditFrom.svg" class="custom-icon" />
                                                 </DxButton>
+                                                &nbsp;
                                                 <DxButton Click="@(() => ConfirmDelete(user.UserId))"
-                                                          CssClass="btn btn-danger ml-2">
-                                                    Eliminar
+                                                          RenderStyle="ButtonRenderStyle.Danger"
+                                                          CssClass="custom-button">
+                                                    <img src="icons/DeleteFrom.svg" class="custom-icon" />
                                                 </DxButton>
                                             </div>
-
                                             @if (userIdToDelete == user.UserId && showConfirmDelete)
                                             {
                                                 <div class="mt-2 alert alert-warning">
@@ -155,6 +157,18 @@
     private async Task LoadReports()
     {
         user = (await UserService.GetListAsync()).ToList();
+        foreach (var u in user)
+        {
+            SetRole(u.UserRoleId ?? 0, u);
+        }
+    }
+
+    private void SetRole(int selectedRoleId, User targetUser)
+    {
+        if (Role.TryGetValue(selectedRoleId, out var roleName))
+        {
+            targetUser.UserRole = roleName;
+        }
     }
 
     private async Task HandleValidSubmit()

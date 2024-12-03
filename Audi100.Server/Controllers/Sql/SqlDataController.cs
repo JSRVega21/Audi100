@@ -35,6 +35,38 @@ namespace Audi100.Server.Controllers
 
         #endregion
 
+        #region GetCostCenterUnit
+        [HttpGet("GetCostCenterUnit")]
+        public async Task<IActionResult> GetCostCenterUnit()
+        {
+            try
+            {
+                var result = await _sqlRepository.GetCostCenterUnit();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener la lista: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetCostCenterSeccion
+        [HttpGet("GetCostCenterSeccion")]
+        public async Task<IActionResult> GetCostCenterSeccion()
+        {
+            try
+            {
+                var result = await _sqlRepository.GetCostCenterSeccion();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener la lista: {ex.Message}");
+            }
+        }
+        #endregion
+
         #region GetDivision
         [HttpGet("GetDivision")]
         public async Task<IActionResult> GetDivision()

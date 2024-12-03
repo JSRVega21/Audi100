@@ -58,6 +58,7 @@ body, html {
 
 .animated-title {
     background-image: url('img/ffacsa.jpg');
+    background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
     border-radius: 30px;

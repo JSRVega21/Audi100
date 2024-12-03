@@ -23,7 +23,7 @@ namespace Audi100.Models
         public DateTime? ReviewdateOf { get; set; }
         public DateTime? ReviewdateAt { get; set; }
         [Required(ErrorMessage = "Se debe ingresar la fecha de creación")]
-        public DateTime? CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; } = DateTime.Now;
         public DateTime? ModificationDate { get; set; }
         public DateTime? ExpectedDate { get; set; }
         [Required(ErrorMessage = "Se debe seleccionar el origen de la revisión")]
@@ -55,6 +55,8 @@ namespace Audi100.Models
         public decimal? HoursInReviwe { get; set; }
         public decimal? VariationOfHours { get; set; }
         public string? AuditObservations { get; set; }
+        public int? AuditStatus { get; set; }
+        public string? AuditStatusText { get; set; }
         public string DisplayName => $"Código del Informe: {ReportCode}, Titulo: {ReportTitle}, " +
             $"Prioridad: {ReviewPriority}, Centro de costo: {nomDepto}, {nomDivision}, {nomSeccion}";
         public string DisplayName2 => $"{ReportCode}, {nomDepto}, {nomDivision}, {nomSeccion}";

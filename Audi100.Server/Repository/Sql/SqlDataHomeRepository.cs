@@ -5,8 +5,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 
 using Audi100.Server.Data;
-using Audi100.Models;
 using System.Data;
+using Audi100.Models;
 
 namespace Audi100.Server.Repository
 {
@@ -35,7 +35,10 @@ namespace Audi100.Server.Repository
                             T0.AUDITFINDINGID, T1.[AUDITREPORTID], T1.[REPORTCODE], T1.[NOMDEPTO], T1.[NOMDIVISION],
                             T1.[NOMSECCION], T0.[NUMBEROFFINDINGS], T0.[DETAILFINDINGAUDIT], 
                             T0.[FINDLEVEL], T2.[DESCRIPTION] AS WEIGHTINGCLASSIFICATION , T3.[DESCRIPTION] AS [FINDSHORTNAME],
-                            T0.[POSITIVEWEIGHTING], T0.[NEGATIVEWEIGHTING], T0.[POSITIVERISK], T0.[NEGATIVERISK]
+                            T0.[POSITIVEWEIGHTING], T0.[NEGATIVEWEIGHTING], T0.[POSITIVERISK], T0.[NEGATIVERISK],
+                            T0.[AUDITFINDINGCOSTCENTER], T0.[AUDITFINDINGDEPTO], T0.[AUDITFINDINGSECCION],
+                            T0.[AUDITORFINDING], T0.[EMPLOYEEFINDING], T0.[EMPLOYEEFINDING2],
+                            T0.[AUDITFINDINGCOSTCENTER], T0.[AUDITFINDINGDEPTO], T0.[AUDITFINDINGSECCION]
                                 FROM [AUDITORIA].[DBO].[AUDITREPORT] T1
                                     INNER JOIN [AUDITORIA].[DBO].[AUDITFINDING] T0 ON T1.[AUDITREPORTID] = T0.[AUDITREPORTID]
                                     INNER JOIN [AUDITORIA].[DBO].[WEIGHTINGCLASSIFICATION] T2 ON T2.[WEIGHINGID] = T0.[WEIGHTINGCLASSIFICATIONID]
@@ -57,6 +60,9 @@ namespace Audi100.Server.Repository
                                 nomDepto = reader.IsDBNull(reader.GetOrdinal("NOMDEPTO")) ? string.Empty : reader.GetString(reader.GetOrdinal("NOMDEPTO")),
                                 nomDivision = reader.IsDBNull(reader.GetOrdinal("NOMDIVISION")) ? string.Empty : reader.GetString(reader.GetOrdinal("NOMDIVISION")),
                                 nomSeccion = reader.IsDBNull(reader.GetOrdinal("NOMSECCION")) ? string.Empty : reader.GetString(reader.GetOrdinal("NOMSECCION")),
+                                AuditFindingCostCenter = reader.IsDBNull(reader.GetOrdinal("AUDITFINDINGCOSTCENTER")) ? string.Empty : reader.GetString(reader.GetOrdinal("AUDITFINDINGCOSTCENTER")),
+                                AuditFindingDepto = reader.IsDBNull(reader.GetOrdinal("AUDITFINDINGDEPTO")) ? string.Empty : reader.GetString(reader.GetOrdinal("AUDITFINDINGDEPTO")),
+                                AuditFindingSeccion = reader.IsDBNull(reader.GetOrdinal("AUDITFINDINGSECCION")) ? string.Empty : reader.GetString(reader.GetOrdinal("AUDITFINDINGSECCION")),
                                 NumberOfFindings = reader.IsDBNull(reader.GetOrdinal("NUMBEROFFINDINGS")) ? 0 : reader.GetDecimal(reader.GetOrdinal("NUMBEROFFINDINGS")),
                                 DetailFindingAudit = reader.IsDBNull(reader.GetOrdinal("DETAILFINDINGAUDIT")) ? string.Empty : reader.GetString(reader.GetOrdinal("DETAILFINDINGAUDIT")),
                                 FindLevel = reader.IsDBNull(reader.GetOrdinal("FINDLEVEL")) ? string.Empty : reader.GetString(reader.GetOrdinal("FINDLEVEL")),
@@ -66,6 +72,9 @@ namespace Audi100.Server.Repository
                                 NegativeWeighting = reader.IsDBNull(reader.GetOrdinal("NEGATIVEWEIGHTING")) ? 0 : reader.GetDecimal(reader.GetOrdinal("NEGATIVEWEIGHTING")),
                                 PositiveRisk = reader.IsDBNull(reader.GetOrdinal("POSITIVERISK")) ? 0 : reader.GetDecimal(reader.GetOrdinal("POSITIVERISK")),
                                 NegativeRisk = reader.IsDBNull(reader.GetOrdinal("NEGATIVERISK")) ? 0 : reader.GetDecimal(reader.GetOrdinal("NEGATIVERISK")),
+                                AuditorFinding = reader.IsDBNull(reader.GetOrdinal("AUDITORFINDING")) ? string.Empty : reader.GetString(reader.GetOrdinal("AUDITORFINDING")),
+                                EmployeeFinding = reader.IsDBNull(reader.GetOrdinal("EMPLOYEEFINDING")) ? string.Empty : reader.GetString(reader.GetOrdinal("EMPLOYEEFINDING")),
+                                EmployeeFinding2 = reader.IsDBNull(reader.GetOrdinal("EMPLOYEEFINDING2")) ? string.Empty : reader.GetString(reader.GetOrdinal("EMPLOYEEFINDING2")),
                             };
                             seccions.Add(seccion);
                         }
@@ -82,6 +91,7 @@ namespace Audi100.Server.Repository
         }
 
         #endregion
+
     }
 }
 

@@ -2,6 +2,7 @@
 
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject FontLoader FontLoader
 
 <div class="page">
     <div class="sidebar">
@@ -24,6 +25,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await FontLoader.LoadFonts(RequiredFonts);
+        await base.OnInitializedAsync();
         var role = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "role");
         if (int.TryParse(role, out var parsedRole))
         {
@@ -37,4 +40,7 @@
         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "role");
         NavigationManager.NavigateTo("/");
     }
+
+    // [Inject] HttpClient Http { get; set; }
+    List<string> RequiredFonts = new() {"times new roman.ttf"};
 }

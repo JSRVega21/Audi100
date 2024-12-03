@@ -40,6 +40,8 @@
                     <DxGridDataColumn Caption="Requerimiento de auditoría" FieldName="@nameof(AuditFinding.RequirementOfAudit)" Visible="false" />
                     <DxGridDataColumn Caption="Plan de acción" FieldName="@nameof(AuditFinding.PlanOfActionAudit)" Visible="false" />
                     <DxGridDataColumn Caption="Detalle del hallazgo" FieldName="@nameof(AuditFinding.DetailFindingAudit)" Visible="false" />
+                    <DxGridDataColumn Caption="ID Estado" FieldName="@nameof(AuditFinding.AuditStatus)" Visible="false" />
+                    <DxGridDataColumn Caption="Estado Seguimiento" FieldName="@nameof(AuditFinding.AuditStatusText)" />
                     <DxGridSelectionColumn Width="60px" />
                     <DxGridCommandColumn Width="150px">
                         <HeaderTemplate>
@@ -49,11 +51,16 @@
                             @if (commandContext.DataItem is AuditFinding auditFinding)
                             {
                                 <div class="d-flex justify-content-start">
-                                    <DxButton Click="@(() => EditReport(auditFinding.AuditFindingId))" CssClass="btn btn-warning ml-2">
-                                        Editar
+                                    <DxButton Click="@(() => EditReport(auditFinding.AuditFindingId))"
+                                              RenderStyle="ButtonRenderStyle.Warning"
+                                              CssClass="custom-button">
+                                        <img src="icons/EditFrom.svg" class="custom-icon" />
                                     </DxButton>
-                                    <DxButton Click="@(() => ConfirmDelete(auditFinding.AuditFindingId))" CssClass="btn btn-danger ml-2">
-                                        Eliminar
+                                    &nbsp;
+                                    <DxButton Click="@(() => ConfirmDelete(auditFinding.AuditFindingId))"
+                                              RenderStyle="ButtonRenderStyle.Danger"
+                                              CssClass="custom-button">
+                                        <img src="icons/DeleteFrom.svg" class="custom-icon" />
                                     </DxButton>
                                 </div>
                                 @if (auditFindingIdToDelete == auditFinding.AuditFindingId && showConfirmDelete)
@@ -88,8 +95,12 @@
     </div>
 </div>
 
-<DxButton Click="CreateReport" CssClass="btn btn-success mb-3">
-    Crear Nuevo Hallazgo
+<br />
+
+<DxButton Click="CreateReport"
+          RenderStyle="ButtonRenderStyle.Info"
+          CssClass="custom-button">
+    <img src="icons/PlusFrom.svg" class="custom-icon" />
 </DxButton>
 
 @code {

@@ -49,6 +49,8 @@
                     <DxGridDataColumn FieldName="@nameof(AuditReport.HoursInReviwe)" Caption="Total de horas en estar revisando" Visible="false" />
                     <DxGridDataColumn FieldName="@nameof(AuditReport.VariationOfHours)" Caption="Validación de horas reales" Visible="false" />
                     <DxGridDataColumn FieldName="@nameof(AuditReport.AuditObservations)" Caption="Observaciones de responsables de unidad auditada" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditReport.AuditStatus)" Caption="ID Estado" Visible="false" />
+                    <DxGridDataColumn FieldName="@nameof(AuditReport.AuditStatusText)" Caption="Estado Seguimiento"  />
                     <DxGridSelectionColumn Width="60px" />
                     <DxGridCommandColumn Width="150px">
                         <HeaderTemplate>
@@ -59,15 +61,17 @@
                             {
                                 <div class="d-flex justify-content-start">
                                     <DxButton Click="@(() => EditReport(auditReport.AuditReportId))"
-                                              CssClass="btn btn-warning ml-2">
-                                        Editar
+                                              RenderStyle="ButtonRenderStyle.Warning"
+                                              CssClass="custom-button">
+                                        <img src="icons/EditFrom.svg" class="custom-icon" />
                                     </DxButton>
+                                    &nbsp;
                                     <DxButton Click="@(() => ConfirmDelete(auditReport.AuditReportId))"
-                                              CssClass="btn btn-danger ml-2">
-                                        Eliminar
+                                              RenderStyle="ButtonRenderStyle.Danger"
+                                              CssClass="custom-button">
+                                        <img src="icons/DeleteFrom.svg" class="custom-icon" />
                                     </DxButton>
                                 </div>
-
                                 @if (auditReportIdToDelete == auditReport.AuditReportId && showConfirmDelete)
                                 {
                                     <div class="mt-2 alert alert-warning">
@@ -101,8 +105,12 @@
     </div>
 </div>
 
-<DxButton Click="CreateReport" CssClass="btn btn-success mb-3">
-    Crear Nuevo Informe
+<br />
+
+<DxButton Click="CreateReport" 
+          RenderStyle="ButtonRenderStyle.Info"
+          CssClass="custom-button">
+    <img src="icons/PlusFrom.svg" class="custom-icon" />
 </DxButton>
 
 @code {

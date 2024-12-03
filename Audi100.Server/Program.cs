@@ -17,13 +17,15 @@ namespace Audi100.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Configurar Kestrel para manejar grandes archivos
-            builder.WebHost.ConfigureKestrel(serverOptions =>
-            {
-                serverOptions.ListenLocalhost(7120, o => o.UseHttps());
-                serverOptions.ListenLocalhost(5000);
-                serverOptions.Limits.MaxRequestBodySize = null;
-            });
+            string allowedClientDomain = builder.Configuration["AllowedClientDomain"];
+
+            //// Configurar Kestrel para manejar grandes archivos
+            //builder.WebHost.ConfigureKestrel(serverOptions =>
+            //{
+            //    //serverOptions.ListenLocalhost(7120, o => o.UseHttp);
+            //    serverOptions.ListenLocalhost(7120);
+            //    serverOptions.Limits.MaxRequestBodySize = null;
+            //});
 
             builder.Services.Configure<FormOptions>(options =>
             {
@@ -37,18 +39,40 @@ namespace Audi100.Server
             });
 
             // Configurar CORS con el origen del cliente
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("Audi100.Server", policy =>
+            //    {
+            //        //    policy.WithOrigins(allowedClientDomain)
+            //        //          .AllowAnyHeader()
+            //        //          .AllowAnyMethod()
+            //        //          .AllowCredentials()
+            //        //          .WithExposedHeaders("Authorization");
+            //        //});
+            //    });
+            //});
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("Audi100.Server", policy =>
                 {
-                    policy.WithOrigins("https://localhost:7182", "http://localhost:7182")
+                    policy.AllowAnyOrigin()  // Permite acceso desde cualquier dominioñ
                           .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .AllowCredentials()
                           .WithExposedHeaders("Authorization");
                 });
             });
 
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("Audi100.Client", policy =>
+            //    {
+            //        policy.AllowAnyOrigin()  // Permite acceso desde cualquier dominio
+            //              .AllowAnyHeader()
+            //              .AllowAnyMethod()
+            //              .WithExposedHeaders("Authorization");
+            //    });
+            //});
 
             // Configurar JWT Authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -87,6 +111,7 @@ namespace Audi100.Server
             #region SQL Repository
             builder.Services.AddScoped<ISqlRepository, SqlDataRepository>();
             builder.Services.AddScoped<ISqlHomeRepository, SqlDataHomeRepository>();
+            builder.Services.AddScoped<ISqlReportPrintRepository, SqlReportPrintRepository>();
             #endregion
 
             #region Audit
@@ -116,8 +141,8 @@ namespace Audi100.Server
                 app.UseSwaggerUI();
             }
 
-            // Aplicar redirección HTTPS
-            app.UseHttpsRedirection();
+            //// Aplicar redirección HTTPS
+            //app.UseHttpsRedirection();
 
             // Aplicar archivos estáticos
             app.UseStaticFiles();

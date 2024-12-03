@@ -18,10 +18,10 @@
         {
             <DxGrid @ref="Grid" Data="@auditFindings" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
                 <Columns>
-                    <DxGridDataColumn Caption="Fechas del hallazgo" FieldName="@nameof(AuditFinding.DateCreate)" />
-                    <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(AuditFinding.AuditFindingId)" />
-                    <DxGridDataColumn Caption="Id Informe" FieldName="@nameof(AuditFinding.AuditReportId)" />
-                    <DxGridDataColumn Caption="Descripción del Informe" FieldName="@nameof(AuditFinding.DataReport)" />
+                    <DxGridDataColumn Caption="Fechas del hallazgo" FieldName="@nameof(AuditFinding.DateCreate)" Width="95px"/>
+                    <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(AuditFinding.AuditFindingId)" Width="95px" />
+                    <DxGridDataColumn Caption="Descripción del Informe" FieldName="@nameof(AuditFinding.DataReport)" Width="750px"/>
+                    <DxGridDataColumn Caption="Número de hallazgo" FieldName="@nameof(AuditFinding.NumberOfFindings)"Width="95px" />
                     <DxGridDataColumn Caption="Nivel de hallazgo" FieldName="@nameof(AuditFinding.FindLevel)" />
                 </Columns>
                 <ToolbarTemplate>
@@ -38,7 +38,8 @@
     </fieldset>
 
     <fieldset class="border p-4 mt-3">
-        <EditForm Model="@newPhoto">
+        Area para cargar las fotos
+        <EditForm Model="@newPhoto" >
             <DataAnnotationsValidator />
             <ValidationSummary />
             <DxComboBox Data="auditFindingIds"
@@ -103,7 +104,6 @@
     private Photo newPhoto = new Photo();
     private List<int> auditFindingIds = new List<int>();
     private List<Photo> selectedPhotos = new List<Photo>();
-
     private bool isLoadingPhotos = false; // Estado de carga de fotos
     private bool isLoadingPdfs = false;   // Estado de carga de PDFs
 

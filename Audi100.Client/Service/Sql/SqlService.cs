@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
 using Audi100.Models;
+using DevExpress.XtraPrinting.Native;
+using SkiaSharp;
 
 namespace Audi100.Client
 {
@@ -37,7 +39,6 @@ namespace Audi100.Client
             var query = $"api/SqlData/GetNombresCompleto?nomDepto={nomDepto}&nomDivision={nomDivision}&nomSeccion={nomSeccion}";
             return await _httpClient.GetFromJsonAsync<IEnumerable<CostCenter>>(query);
         }
-
         public async Task<IEnumerable<Employee>> GetAudit()
         {
             var query = $"api/SqlData/GetAudit";
@@ -48,6 +49,18 @@ namespace Audi100.Client
         {
             var query = $"api/SqlData/GetEmployee";
             return await _httpClient.GetFromJsonAsync<IEnumerable<Employee>>(query);
+        }
+
+        public async Task<IEnumerable<CostCenterUnit>> GetCostCenterUnit()
+        {
+            var query = $"api/SqlData/GetCostCenterUnit";
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CostCenterUnit>>(query);
+        }
+
+        public async Task<IEnumerable<CostCenterSeccion>> GetCostCenterSeccion()
+        {
+            var query = $"api/SqlData/GetCostCenterSeccion";
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CostCenterSeccion>>(query);
         }
 
         public async Task<IEnumerable<CostSeccion>> GetSeccion()
