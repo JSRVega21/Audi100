@@ -45,7 +45,8 @@
                     <h4>Lista de Bsc</h4>
                     @if (bsc != null && bsc.Any())
                     {
-                        <DxGrid Data="@bsc" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
+                        <DxGrid Data="@bsc" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true"
+                                ShowFilterRow="true" ShowGroupPanel="true">
                             <Columns>
                                 <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(Bsc.BscId)" Width="95px" />
                                 <DxGridDataColumn Caption="Descripción" FieldName="@nameof(Bsc.Description)" Width="350px" />

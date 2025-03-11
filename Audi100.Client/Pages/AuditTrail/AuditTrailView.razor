@@ -14,7 +14,7 @@
         @if (AuditTrails != null && AuditTrails.Any())
         {
             <DxGrid @ref="Grid" Data="@AuditTrails" ColumnResizeMode="GridColumnResizeMode.NextColumn"
-                    TextWrapEnabled="false" ShowSearchBox="true" >
+                    TextWrapEnabled="false" ShowSearchBox="true" ShowFilterRow="true" ShowGroupPanel="true">
                 <Columns>
                     <DxGridDataColumn Caption="Id del seguimiento" FieldName="@nameof(AuditTrail.AuditTrailId)" Width="95px" Visible="false" />
                     <DxGridDataColumn Caption="Id del hallazgo" FieldName="@nameof(AuditTrail.AuditFindingId)" Width="95px" Visible="false" />

@@ -9,7 +9,7 @@
 @using DevExpress.Blazor
 
 <EditForm Model="@userFrom" OnValidSubmit="HandleValidSubmit" Context="editFormContext">
-    <h3>@(userFrom.UserId == 0 ? "Crear Usuario" : "Editar Usuario")</h3>
+    <h1>@(userFrom.UserId == 0 ? "Crear Usuario" : "Editar Usuario")</h1>
 
     <DataAnnotationsValidator />
 
@@ -79,7 +79,7 @@
                     @if (user != null && user.Any())
                     {
                         <DxGrid Data="@user" ColumnResizeMode="GridColumnResizeMode.NextColumn"
-                                TextWrapEnabled="false" ShowSearchBox="true">
+                                TextWrapEnabled="false" ShowSearchBox="true" ShowFilterRow="true" ShowGroupPanel="true">
                             <Columns>
                                 <DxGridDataColumn Caption="Id Usuario" FieldName="@nameof(User.UserId)" Width="45px" />
                                 <DxGridDataColumn Caption="Nombre de usuario" FieldName="@nameof(User.UserName)" />

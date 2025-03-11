@@ -45,7 +45,8 @@
                     <h4>Lista de Clasificación</h4>
                     @if (classification != null && classification.Any())
                     {
-                        <DxGrid Data="@classification" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
+                        <DxGrid Data="@classification" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true"
+                                ShowFilterRow="true" ShowGroupPanel="true">
                             <Columns>
                                 <DxGridDataColumn Caption="Id Hallazgo" FieldName="@nameof(Classification.ClassificationId)" Width="95px" />
                                 <DxGridDataColumn Caption="Descripción" FieldName="@nameof(Classification.Description)" Width="350px" />

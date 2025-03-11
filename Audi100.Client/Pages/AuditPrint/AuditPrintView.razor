@@ -1,4 +1,6 @@
-﻿@page "/AuditPrintView"
+﻿
+
+@page "/AuditPrintView"
 @inject NavigationManager NavigationManager
 @inject IService<AuditPrint, int> AuditPrintService
 @inject IService<AuditFinding, int> AuditFindingService
@@ -15,7 +17,8 @@
     <div class="card-body">
         @if (AuditPrints != null && AuditPrints.Any())
         {
-            <DxGrid @ref="Grid" Data="@AuditPrints" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false" ShowSearchBox="true">
+            <DxGrid @ref="Grid" Data="@AuditPrints" ColumnResizeMode="GridColumnResizeMode.NextColumn"
+                    TextWrapEnabled="false" ShowSearchBox="true" ShowFilterRow="true" ShowGroupPanel="true">
                 <Columns>
                     <DxGridDataColumn FieldName="@nameof(AuditPrint.AuditPrintId)" Caption="Id Acta" />
                     <DxGridDataColumn FieldName="@nameof(AuditPrint.ReportCode)" Caption="Codigo Informe" />
